@@ -14,7 +14,7 @@ class LoadDeclarations
     /**
      * LoadDeclarations constructor.
      *
-     * @param  \DarkGhostHunter\Laraconfig\Registrar\SettingRegistrar  $registrar
+     * @param \DarkGhostHunter\Laraconfig\Registrar\SettingRegistrar $registrar
      */
     public function __construct(protected SettingRegistrar $registrar)
     {
@@ -22,11 +22,6 @@ class LoadDeclarations
 
     /**
      * Handles the Settings migration.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
-     * @param  \Closure  $next
-     *
-     * @return mixed
      */
     public function handle(Data $data, Closure $next): mixed
     {

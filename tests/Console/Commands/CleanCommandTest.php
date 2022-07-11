@@ -2,12 +2,12 @@
 
 namespace Tests\Console\Commands;
 
-use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
-use DarkGhostHunter\Laraconfig\Eloquent\Setting;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Tests\BaseTestCase;
 use Tests\Dummies\DummyModel;
+use Illuminate\Support\Facades\DB;
+use DarkGhostHunter\Laraconfig\Eloquent\Setting;
+use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CleanCommandTest extends BaseTestCase
 {
@@ -19,9 +19,9 @@ class CleanCommandTest extends BaseTestCase
 
         DB::table('users')->insert([
             [
-                'name'       => 'charlie',
-                'email'      => 'charlie@email.com',
-                'password'   => '123456',
+                'name' => 'charlie',
+                'email' => 'charlie@email.com',
+                'password' => '123456',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -30,16 +30,14 @@ class CleanCommandTest extends BaseTestCase
 
     /**
      * Define database migrations.
-     *
-     * @return void
      */
     protected function defineDatabaseMigrations(): void
     {
         $this->loadLaravelMigrations();
-        $this->loadMigrationsFrom(__DIR__ . '/../../../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../../../database/migrations');
     }
 
-    public function test_cleans_orphaned_settings(): void
+    public function testCleansOrphanedSettings(): void
     {
         Metadata::forceCreate([
             'name' => 'foo',

@@ -2,12 +2,11 @@
 
 namespace Tests;
 
+use SplFileInfo;
+use Illuminate\Filesystem\Filesystem;
 use DarkGhostHunter\Laraconfig\Facades\Setting;
 use DarkGhostHunter\Laraconfig\LaraconfigServiceProvider;
 use DarkGhostHunter\Laraconfig\Registrar\SettingRegistrar;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Str;
-use SplFileInfo;
 
 class ServiceProviderTest extends BaseTestCase
 {
@@ -21,22 +20,22 @@ class ServiceProviderTest extends BaseTestCase
         $this->filesystem = $this->app->make(Filesystem::class);
     }
 
-    public function test_registers_package(): void
+    public function testRegistersPackage(): void
     {
         static::assertArrayHasKey(LaraconfigServiceProvider::class, $this->app->getLoadedProviders());
     }
 
-    public function test_facades(): void
+    public function testFacades(): void
     {
         static::assertInstanceOf(SettingRegistrar::class, Setting::getFacadeRoot());
     }
 
-    public function test_uses_config(): void
+    public function testUsesConfig(): void
     {
         static::assertEquals(include(__DIR__.'/../config/laraconfig.php'), config('laraconfig'));
     }
 
-    public function test_publishes_config(): void
+    public function testPublishesConfig(): void
     {
         $this->artisan(
             'vendor:publish',
@@ -46,10 +45,10 @@ class ServiceProviderTest extends BaseTestCase
             ]
         )->execute();
 
-        static::assertFileEquals(base_path('config/laraconfig.php'), __DIR__ . '/../config/laraconfig.php');
+        static::assertFileEquals(base_path('config/laraconfig.php'), __DIR__.'/../config/laraconfig.php');
     }
 
-    public function test_publishes_migrations(): void
+    public function testPublishesMigrations(): void
     {
         $this->filesystem->ensureDirectoryExists(database_path('migrations'));
 
@@ -63,16 +62,20 @@ class ServiceProviderTest extends BaseTestCase
 
         $files = collect($this->filesystem->files($this->app->databasePath('migrations')));
 
-        static::assertTrue($files->contains(
+        static::assertTrue(
+            $files->contains(
             static function (SplFileInfo $file): bool {
                 return preg_match('/.+\d{4}_\d{2}_\d{2}_\d{6}_(create_user_settings_table.php)$/', $file->getPathname());
-            })
+            }
+        )
         );
 
-        static::assertTrue($files->contains(
+        static::assertTrue(
+            $files->contains(
             static function (SplFileInfo $file): bool {
                 return preg_match('/.+\d{4}_\d{2}_\d{2}_\d{6}_(create_user_settings_metadata_table.php)$/', $file->getPathname());
-            })
+            }
+        )
         );
     }
 

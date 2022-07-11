@@ -2,8 +2,8 @@
 
 namespace DarkGhostHunter\Laraconfig\Migrator;
 
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 /**
  * @internal
@@ -33,22 +33,16 @@ class Data
 
     /**
      * If the cache should be invalidated on settings changes.
-     *
-     * @var bool
      */
     public bool $invalidateCache = false;
 
     /**
      * Invalidate the cache through the models instead of the settings.
-     *
-     * @var bool
      */
     public bool $useModels = false;
 
     /**
      * Data constructor.
-     *
-     * @return void
      */
     public function __construct()
     {

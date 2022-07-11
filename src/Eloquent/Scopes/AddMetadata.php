@@ -2,12 +2,12 @@
 
 namespace DarkGhostHunter\Laraconfig\Eloquent\Scopes;
 
-use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
+use Illuminate\Database\Eloquent\Builder;
+use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Support\Collection;
 
 /**
  * @internal
@@ -16,11 +16,6 @@ class AddMetadata implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     * @param  \Illuminate\Database\Eloquent\Model|\DarkGhostHunter\Laraconfig\HasConfig  $model
-     *
-     * @return void
      */
     public function apply(Builder $builder, Model $model): void
     {
@@ -28,7 +23,6 @@ class AddMetadata implements Scope
         // This adds the metadata to the Model regardless of the columns being
         // queried, or it will replace the "select all" statement smartly.
         $builder->beforeQuery(static function (QueryBuilder $builder) use ($model): void {
-
             $builder->join('user_settings_metadata', 'user_settings.metadata_id', 'user_settings_metadata.id');
 
             if (empty($builder->columns)) {

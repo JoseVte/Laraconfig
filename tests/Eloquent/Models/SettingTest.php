@@ -2,14 +2,14 @@
 
 namespace Tests\Eloquent\Models;
 
-use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
-use DarkGhostHunter\Laraconfig\Eloquent\Scopes\AddMetadata;
-use DarkGhostHunter\Laraconfig\Eloquent\Setting;
-use DarkGhostHunter\Laraconfig\SettingsCache;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\BaseTestCase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Tests\BaseTestCase;
+use DarkGhostHunter\Laraconfig\SettingsCache;
+use DarkGhostHunter\Laraconfig\Eloquent\Setting;
+use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use DarkGhostHunter\Laraconfig\Eloquent\Scopes\AddMetadata;
 
 class SettingTest extends BaseTestCase
 {
@@ -23,11 +23,11 @@ class SettingTest extends BaseTestCase
         parent::setUp();
 
         $this->metadata = Metadata::make()->forceFill([
-            'name'    => 'foo',
-            'type'    => 'string',
+            'name' => 'foo',
+            'type' => 'string',
             'default' => 'bar',
-            'bag'     => 'users',
-            'group'   => 'default',
+            'bag' => 'users',
+            'group' => 'default',
         ]);
 
         $this->metadata->save();
@@ -41,8 +41,6 @@ class SettingTest extends BaseTestCase
 
     /**
      * Define database migrations.
-     *
-     * @return void
      */
     protected function defineDatabaseMigrations(): void
     {
@@ -50,14 +48,14 @@ class SettingTest extends BaseTestCase
         $this->loadMigrationsFrom(__DIR__.'/../../../database/migrations');
     }
 
-    public function test_adds_metadata(): void
+    public function testAddsMetadata(): void
     {
         /** @var \DarkGhostHunter\Laraconfig\Eloquent\Setting $setting */
         $setting = Setting::make()
             ->setRawAttributes(['value' => 'quz'])
             ->forceFill([
                 'settable_type' => 'foo',
-                'settable_id'   => 1,
+                'settable_id' => 1,
             ]);
 
         $setting->metadata()->associate($this->metadata);
@@ -73,7 +71,7 @@ class SettingTest extends BaseTestCase
         static::assertEquals('users', $setting->bag);
     }
 
-    public function test_casts_array(): void
+    public function testCastsArray(): void
     {
         $this->metadata->forceFill([
             'type' => 'array',
@@ -90,7 +88,7 @@ class SettingTest extends BaseTestCase
         static::assertEquals(['foo', 'bar'], Setting::find(1)->value);
     }
 
-    public function test_casts_boolean(): void
+    public function testCastsBoolean(): void
     {
         $this->metadata->forceFill([
             'type' => 'boolean',
@@ -107,7 +105,7 @@ class SettingTest extends BaseTestCase
         static::assertTrue(Setting::find(1)->value);
     }
 
-    public function test_casts_collection(): void
+    public function testCastsCollection(): void
     {
         $this->metadata->forceFill([
             'type' => 'collection',
@@ -127,7 +125,7 @@ class SettingTest extends BaseTestCase
         static::assertEquals(new Collection(['foo', 'bar']), $setting->value);
     }
 
-    public function test_casts_collection_using_collection_object(): void
+    public function testCastsCollectionUsingCollectionObject(): void
     {
         $this->metadata->forceFill([
             'type' => 'collection',
@@ -147,7 +145,7 @@ class SettingTest extends BaseTestCase
         static::assertEquals(new Collection(['foo', 'bar']), $setting->value);
     }
 
-    public function test_casts_datetime(): void
+    public function testCastsDatetime(): void
     {
         Carbon::setTestNow($now = now());
 
@@ -169,7 +167,7 @@ class SettingTest extends BaseTestCase
         static::assertEquals($now->milli(0), $setting->value);
     }
 
-    public function test_casts_datetime_using_datetime(): void
+    public function testCastsDatetimeUsingDatetime(): void
     {
         Carbon::setTestNow($now = now());
 
@@ -191,7 +189,7 @@ class SettingTest extends BaseTestCase
         static::assertEquals($now->milli(0), $setting->value);
     }
 
-    public function test_casts_float(): void
+    public function testCastsFloat(): void
     {
         $this->metadata->forceFill([
             'type' => 'float',
@@ -210,7 +208,7 @@ class SettingTest extends BaseTestCase
         static::assertEquals(6548.575, $setting->value);
     }
 
-    public function test_casts_integer(): void
+    public function testCastsInteger(): void
     {
         $this->metadata->forceFill([
             'type' => 'float',
@@ -229,7 +227,7 @@ class SettingTest extends BaseTestCase
         static::assertEquals(6548, $setting->value);
     }
 
-    public function test_casts_string(): void
+    public function testCastsString(): void
     {
         $this->metadata->forceFill([
             'type' => 'string',
@@ -248,7 +246,7 @@ class SettingTest extends BaseTestCase
         static::assertEquals('foobar', $setting->value);
     }
 
-    public function test_sets_value_if_enabled(): void
+    public function testSetsValueIfEnabled(): void
     {
         $this->metadata->forceFill([
             'type' => 'string',
@@ -256,7 +254,7 @@ class SettingTest extends BaseTestCase
 
         $this->setting->fill([
             'value' => 'foo',
-            'is_enable' => false
+            'is_enable' => false,
         ])->save();
 
         $setting = Setting::find(1);
@@ -266,7 +264,7 @@ class SettingTest extends BaseTestCase
         static::assertEquals('bar', $setting->value);
     }
 
-    public function test_enabled_or_disabled(): void
+    public function testEnabledOrDisabled(): void
     {
         $this->metadata->forceFill([
             'type' => 'string',
@@ -292,7 +290,7 @@ class SettingTest extends BaseTestCase
         $this->assertDatabaseHas('user_settings', ['id' => 1, 'is_enabled' => true]);
     }
 
-    public function test_set_invalidates_cache_of_laraconfig(): void
+    public function testSetInvalidatesCacheOfLaraconfig(): void
     {
         $this->setting->fill(['value' => 'foo'])->save();
 
@@ -308,7 +306,7 @@ class SettingTest extends BaseTestCase
         $setting->set('bar');
     }
 
-    public function test_set_invalidates_cache_manually(): void
+    public function testSetInvalidatesCacheManually(): void
     {
         config()->set('laraconfig.cache.enable', true);
 
@@ -323,7 +321,7 @@ class SettingTest extends BaseTestCase
         static::assertNull(cache()->store()->get('laraconfig|bar|1'));
     }
 
-    public function test_adds_metadata_on_select_query(): void
+    public function testAddsMetadataOnSelectQuery(): void
     {
         static::assertEquals(
             'select "user_settings"."id", "user_settings_metadata"."name" as "name", "user_settings_metadata"."type" as "type", "user_settings_metadata"."bag" as "bag", "user_settings_metadata"."default" as "default", "user_settings_metadata"."group" as "group" from "user_settings" inner join "user_settings_metadata" on "user_settings"."metadata_id" = "user_settings_metadata"."id"',
@@ -331,7 +329,7 @@ class SettingTest extends BaseTestCase
         );
     }
 
-    public function test_adds_metadata_on_select_all_query(): void
+    public function testAddsMetadataOnSelectAllQuery(): void
     {
         static::assertEquals(
             'select "user_settings".*, "user_settings_metadata"."name" as "name", "user_settings_metadata"."type" as "type", "user_settings_metadata"."bag" as "bag", "user_settings_metadata"."default" as "default", "user_settings_metadata"."group" as "group" from "user_settings" inner join "user_settings_metadata" on "user_settings"."metadata_id" = "user_settings_metadata"."id"',
@@ -339,7 +337,7 @@ class SettingTest extends BaseTestCase
         );
     }
 
-    public function test_disables_add_metadata_scope(): void
+    public function testDisablesAddMetadataScope(): void
     {
         static::assertEquals(
             'select * from "user_settings"',

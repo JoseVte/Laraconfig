@@ -2,31 +2,21 @@
 
 namespace DarkGhostHunter\Laraconfig\Eloquent\Scopes;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
+use Illuminate\Database\Eloquent\Builder;
 
 class WhereConfig implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     *
-     * @return void
      */
     public function apply(Builder $builder, Model $model): void
     {
-        //
     }
 
     /**
      * Extend the query builder with the needed functions.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     *
-     * @return void
      */
     public function extend(Builder $builder): void
     {
@@ -37,13 +27,7 @@ class WhereConfig implements Scope
     /**
      * Filters the user by the config value.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     * @param  string|array  $name
-     * @param  string|null  $operator
-     * @param  null  $value
-     * @param  string  $boolean
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param null $value
      */
     public static function whereConfig(
         Builder $builder,
@@ -77,19 +61,16 @@ class WhereConfig implements Scope
                                 ->whereHas('metadata', static function (Builder $builder) use ($name): void {
                                     $builder->where('name', $name);
                                 });
-                        });
-            });
+                        }
+                    );
+            }
+        );
     }
 
     /**
      * Filters the user by the config value.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     * @param  string|array  $name
-     * @param  string|null  $operator
-     * @param  null  $value
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param null $value
      */
     public static function orWhereConfig(
         Builder $builder,

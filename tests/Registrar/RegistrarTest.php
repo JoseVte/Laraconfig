@@ -2,10 +2,10 @@
 
 namespace Tests\Registrar;
 
+use Tests\BaseTestCase;
+use Illuminate\Support\Collection;
 use DarkGhostHunter\Laraconfig\Facades\Setting;
 use DarkGhostHunter\Laraconfig\Registrar\SettingRegistrar;
-use Illuminate\Support\Collection;
-use Tests\BaseTestCase;
 
 class RegistrarTest extends BaseTestCase
 {
@@ -18,7 +18,7 @@ class RegistrarTest extends BaseTestCase
         $this->registrar = $this->app->make(SettingRegistrar::class);
     }
 
-    public function test_registers_default_declaration(): void
+    public function testRegistersDefaultDeclaration(): void
     {
         Setting::name('foo');
 
@@ -36,7 +36,7 @@ class RegistrarTest extends BaseTestCase
         static::assertEquals('users', $declaration->bag);
     }
 
-    public function test_registers_declarations_types(): void
+    public function testRegistersDeclarationsTypes(): void
     {
         $collection = new Collection([
             'array' => Setting::name('array')->array(),
@@ -51,14 +51,14 @@ class RegistrarTest extends BaseTestCase
         static::assertEquals($collection, $this->registrar->getDeclarations());
     }
 
-    public function test_registers_declaration_default(): void
+    public function testRegistersDeclarationDefault(): void
     {
         Setting::name('foo')->datetime()->default(today());
 
         static::assertEquals(today(), $this->registrar->getDeclarations()->first()->default);
     }
 
-    public function test_registers_declaration_disabled(): void
+    public function testRegistersDeclarationDisabled(): void
     {
         Setting::name('foo')->disabled();
         Setting::name('bar')->disabled(false);
@@ -67,7 +67,7 @@ class RegistrarTest extends BaseTestCase
         static::assertFalse($this->registrar->getDeclarations()->get('bar')->enabled);
     }
 
-    public function test_registers_declaration_group(): void
+    public function testRegistersDeclarationGroup(): void
     {
         Setting::name('foo')->group('baz');
         Setting::name('bar')->group('qux');
@@ -76,7 +76,7 @@ class RegistrarTest extends BaseTestCase
         static::assertEquals('qux', $this->registrar->getDeclarations()->get('bar')->group);
     }
 
-    public function test_registers_declaration_bag(): void
+    public function testRegistersDeclarationBag(): void
     {
         Setting::name('foo')->bag('baz');
         Setting::name('bar')->bag('qux');
@@ -85,25 +85,25 @@ class RegistrarTest extends BaseTestCase
         static::assertEquals('qux', $this->registrar->getDeclarations()->get('bar')->bag);
     }
 
-    public function test_registers_declaration_procedure(): void
+    public function testRegistersDeclarationProcedure(): void
     {
-        Setting::name('foo')->using(fn() => true);
+        Setting::name('foo')->using(fn () => true);
 
-        static::assertEquals(fn() => true, $this->registrar->getDeclarations()->get('foo')->using);
+        static::assertEquals(fn () => true, $this->registrar->getDeclarations()->get('foo')->using);
     }
 
-    public function test_registers_migrable(): void
+    public function testRegistersMigrable(): void
     {
         Setting::name('foo')->from('baz');
 
         static::assertEquals('baz', $this->registrar->getMigrable()->get('foo')->from);
     }
 
-    public function test_registers_migrable_with_procedure(): void
+    public function testRegistersMigrableWithProcedure(): void
     {
-        Setting::name('foo')->from('baz')->using(fn() => true);
+        Setting::name('foo')->from('baz')->using(fn () => true);
 
         static::assertEquals('baz', $this->registrar->getMigrable()->get('foo')->from);
-        static::assertEquals(fn() => true, $this->registrar->getMigrable()->get('foo')->using);
+        static::assertEquals(fn () => true, $this->registrar->getMigrable()->get('foo')->using);
     }
 }

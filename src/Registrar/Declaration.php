@@ -11,8 +11,6 @@ class Declaration
      * Type of the setting.
      *
      * @internal
-     *
-     * @var string
      */
     public string $type = Metadata::TYPE_STRING;
 
@@ -20,8 +18,6 @@ class Declaration
      * The default value, if any.
      *
      * @internal
-     *
-     * @var mixed
      */
     public mixed $default = null;
 
@@ -29,8 +25,6 @@ class Declaration
      * If it should be registered as enabled.
      *
      * @internal
-     *
-     * @var bool
      */
     public bool $enabled = true;
 
@@ -38,8 +32,6 @@ class Declaration
      * The group the setting belongs to.
      *
      * @internal
-     *
-     * @var string
      */
     public string $group = 'default';
 
@@ -47,8 +39,6 @@ class Declaration
      * Sets the Declaration to migrate the value from other old value.
      *
      * @internal
-     *
-     * @var string|null
      */
     public ?string $from = null;
 
@@ -56,16 +46,14 @@ class Declaration
      * A procedure to translate the setting original value to another.
      *
      * @internal
-     *
-     * @var \Closure|null
      */
     public null|Closure $using = null;
 
     /**
      * Declaration constructor.
      *
-     * @param  string  $name
-     * @param  string  $bag
+     * @param string $name
+     * @param string $bag
      */
     public function __construct(public string $name, public string $bag)
     {
@@ -156,9 +144,7 @@ class Declaration
     }
 
     /**
-     * Sets the default value
-     *
-     * @param mixed $value
+     * Sets the default value.
      *
      * @return $this
      */
@@ -184,8 +170,6 @@ class Declaration
     /**
      * Sets the group this setting belongs to.
      *
-     * @param  string  $name
-     *
      * @return $this
      */
     public function group(string $name): static
@@ -197,8 +181,6 @@ class Declaration
 
     /**
      * Sets the bag for declaration.
-     *
-     * @param  string  $name
      *
      * @return $this
      */
@@ -212,8 +194,6 @@ class Declaration
     /**
      * Migrates the value from an old setting.
      *
-     * @param  string  $oldSetting
-     *
      * @return $this
      */
     public function from(string $oldSetting): static
@@ -226,8 +206,6 @@ class Declaration
     /**
      * Registers a callback to migrate the old value to the new one.
      *
-     * @param  \Closure  $callback
-     *
      * @return $this
      */
     public function using(Closure $callback): static
@@ -239,18 +217,16 @@ class Declaration
 
     /**
      * Transforms the Declaration to a Metadata Model.
-     *
-     * @return \DarkGhostHunter\Laraconfig\Eloquent\Metadata
      */
     public function toMetadata(): Metadata
     {
-        return (new Metadata)->forceFill([
-            'name'          => $this->name,
-            'type'          => $this->type,
-            'default'       => $this->default,
-            'bag'           => $this->bag,
-            'group'         => $this->group,
-            'is_enabled'    => $this->enabled
+        return (new Metadata())->forceFill([
+            'name' => $this->name,
+            'type' => $this->type,
+            'default' => $this->default,
+            'bag' => $this->bag,
+            'group' => $this->group,
+            'is_enabled' => $this->enabled,
         ]);
     }
 }

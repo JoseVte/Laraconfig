@@ -2,8 +2,8 @@
 
 namespace Tests\Dummies;
 
-use DarkGhostHunter\Laraconfig\HasConfig;
 use Illuminate\Database\Eloquent\Model;
+use DarkGhostHunter\Laraconfig\HasConfig;
 
 /**
  * @method static static find($int)

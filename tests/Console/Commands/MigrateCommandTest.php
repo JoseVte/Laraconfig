@@ -2,23 +2,23 @@
 
 namespace Tests\Console\Commands;
 
-use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
-use DarkGhostHunter\Laraconfig\Eloquent\Setting as SettingModel;
-use DarkGhostHunter\Laraconfig\Facades\Setting;
-use DarkGhostHunter\Laraconfig\Migrator\Data;
-use DarkGhostHunter\Laraconfig\Registrar\SettingRegistrar;
-use Illuminate\Contracts\Cache\Factory;
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
+use Tests\BaseTestCase;
 use Illuminate\Support\Arr;
+use Tests\Dummies\DummyModel;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Mockery;
-use Tests\BaseTestCase;
-use Tests\Dummies\DummyModel;
+use Illuminate\Contracts\Cache\Store;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Contracts\Cache\Factory;
+use Illuminate\Database\Eloquent\Model;
+use DarkGhostHunter\Laraconfig\Migrator\Data;
+use DarkGhostHunter\Laraconfig\Facades\Setting;
+use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use DarkGhostHunter\Laraconfig\Registrar\SettingRegistrar;
+use DarkGhostHunter\Laraconfig\Eloquent\Setting as SettingModel;
 
 class MigrateCommandTest extends BaseTestCase
 {
@@ -38,10 +38,10 @@ class MigrateCommandTest extends BaseTestCase
 
         $this->filesystem->ensureDirectoryExists(base_path('settings'));
 
-        $this->data = new Data;
+        $this->data = new Data();
 
         $this->data->models = $this->models = new Collection([
-            new DummyModel
+            new DummyModel(),
         ]);
 
         $this->swap(Data::class, $this->data);
@@ -73,10 +73,8 @@ class MigrateCommandTest extends BaseTestCase
 
     /**
      * Executes a callback on "production" environment.
-     *
-     * @param  \Closure  $closure
      */
-    protected function runWhileOnProduction(\Closure $closure) : void
+    protected function runWhileOnProduction(\Closure $closure): void
     {
         $original = $this->app['env'];
 
@@ -89,13 +87,11 @@ class MigrateCommandTest extends BaseTestCase
 
     /**
      * Define database migrations.
-     *
-     * @return void
      */
     protected function defineDatabaseMigrations(): void
     {
         $this->loadLaravelMigrations();
-        $this->loadMigrationsFrom(__DIR__ . '/../../../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../../../database/migrations');
     }
 
     protected function resetDeclarations(): void
@@ -105,7 +101,7 @@ class MigrateCommandTest extends BaseTestCase
         }
     }
 
-    public function test_confirms_deletion_on_production(): void
+    public function testConfirmsDeletionOnProduction(): void
     {
         Metadata::make()->forceFill([
             'name' => 'foo',
@@ -134,7 +130,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseCount('user_settings', 1);
     }
 
-    public function test_bypass_confirms_deletion_on_production_with_force(): void
+    public function testBypassConfirmsDeletionOnProductionWithForce(): void
     {
         Metadata::make()->forceFill([
             'name' => 'foo',
@@ -162,7 +158,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseCount('user_settings', 0);
     }
 
-    public function test_confirms_full_refresh_on_production(): void
+    public function testConfirmsFullRefreshOnProduction(): void
     {
         Metadata::make()->forceFill([
             'name' => 'foo',
@@ -191,7 +187,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseCount('user_settings', 1);
     }
 
-    public function test_bypass_confirms_full_refresh_on_production_with_force(): void
+    public function testBypassConfirmsFullRefreshOnProductionWithForce(): void
     {
         Metadata::make()->forceFill([
             'name' => 'foo',
@@ -219,7 +215,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseCount('user_settings', 0);
     }
 
-    public function test_doesnt_migrates_if_manifest_empty(): void
+    public function testDoesntMigratesIfManifestEmpty(): void
     {
         $this->artisan('settings:migrate')
             ->expectsOutput('No metadata exists in the database, and no declaration exists.')
@@ -230,7 +226,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseCount('user_settings', 0);
     }
 
-    public function test_migrates_even_if_user_has_different_bag(): void
+    public function testMigratesEvenIfUserHasDifferentBag(): void
     {
         Setting::name('foo')->bag('something_else_entirely');
 
@@ -240,22 +236,22 @@ class MigrateCommandTest extends BaseTestCase
 
         $this->assertDatabaseCount('user_settings_metadata', 1);
         $this->assertDatabaseHas('user_settings_metadata', [
-            'bag' => 'something_else_entirely'
+            'bag' => 'something_else_entirely',
         ]);
         $this->assertDatabaseCount('user_settings', 3);
     }
 
-    public function test_runs_migrations_but_result_same_if_manifest_equal_to_database(): void
+    public function testRunsMigrationsButResultSameIfManifestEqualToDatabase(): void
     {
         DB::table('user_settings_metadata')->insert($bag = [
             'id' => 1,
-            'name'=> 'foo',
-            'type'=> 'string',
-            'default'=> null,
-            'group'=> 'default',
-            'bag'=> 'something_else_entirely',
-            'created_at'=> '2021-07-04 18:16:12',
-            'updated_at'=> '2021-07-04 18:16:12'
+            'name' => 'foo',
+            'type' => 'string',
+            'default' => null,
+            'group' => 'default',
+            'bag' => 'something_else_entirely',
+            'created_at' => '2021-07-04 18:16:12',
+            'updated_at' => '2021-07-04 18:16:12',
         ]);
 
         Setting::name('foo')->bag('something_else_entirely');
@@ -269,7 +265,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseCount('user_settings', 0);
     }
 
-    public function test_creates_new_setting(): void
+    public function testCreatesNewSetting(): void
     {
         Setting::name('array')->array();
         Setting::name('boolean')->boolean();
@@ -291,7 +287,7 @@ class MigrateCommandTest extends BaseTestCase
                 'id' => 1,
                 'name' => 'array',
                 'type' => 'array',
-                'default' => NULL,
+                'default' => null,
                 'group' => 'default',
                 'bag' => 'users',
                 'created_at' => $now->toDateTimeString(),
@@ -301,7 +297,7 @@ class MigrateCommandTest extends BaseTestCase
                 'id' => 2,
                 'name' => 'boolean',
                 'type' => 'boolean',
-                'default' => NULL,
+                'default' => null,
                 'group' => 'default',
                 'bag' => 'users',
                 'created_at' => $now->toDateTimeString(),
@@ -311,7 +307,7 @@ class MigrateCommandTest extends BaseTestCase
                 'id' => 3,
                 'name' => 'collection',
                 'type' => 'collection',
-                'default' => NULL,
+                'default' => null,
                 'group' => 'default',
                 'bag' => 'users',
                 'created_at' => $now->toDateTimeString(),
@@ -321,7 +317,7 @@ class MigrateCommandTest extends BaseTestCase
                 'id' => 4,
                 'name' => 'datetime',
                 'type' => 'datetime',
-                'default' => NULL,
+                'default' => null,
                 'group' => 'default',
                 'bag' => 'users',
                 'created_at' => $now->toDateTimeString(),
@@ -331,7 +327,7 @@ class MigrateCommandTest extends BaseTestCase
                 'id' => 5,
                 'name' => 'float',
                 'type' => 'float',
-                'default' => NULL,
+                'default' => null,
                 'group' => 'default',
                 'bag' => 'users',
                 'created_at' => $now->toDateTimeString(),
@@ -341,7 +337,7 @@ class MigrateCommandTest extends BaseTestCase
                 'id' => 6,
                 'name' => 'integer',
                 'type' => 'integer',
-                'default' => NULL,
+                'default' => null,
                 'group' => 'default',
                 'bag' => 'users',
                 'created_at' => $now->toDateTimeString(),
@@ -351,7 +347,7 @@ class MigrateCommandTest extends BaseTestCase
                 'id' => 7,
                 'name' => 'string',
                 'type' => 'string',
-                'default' => NULL,
+                'default' => null,
                 'group' => 'default',
                 'bag' => 'users',
                 'created_at' => $now->toDateTimeString(),
@@ -377,7 +373,7 @@ class MigrateCommandTest extends BaseTestCase
         ]);
     }
 
-    public function test_creates_new_settings_and_deletes_old_settings(): void
+    public function testCreatesNewSettingsAndDeletesOldSettings(): void
     {
         Carbon::setTestNow($now = now());
 
@@ -395,7 +391,7 @@ class MigrateCommandTest extends BaseTestCase
         Setting::name('quz')->boolean()->default(true)->bag('bar_bag')->from('foo');
         Setting::name('cougar')->string()
             ->from('baz')
-            ->using(fn($setting) => Arr::first($setting->value, default: $setting->default));
+            ->using(fn ($setting) => Arr::first($setting->value, default: $setting->default));
 
         $this->artisan('settings:migrate')
             ->assertExitCode(0)
@@ -459,7 +455,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseCount('user_settings', 3 * 3);
     }
 
-    public function test_deletes_old_settings(): void
+    public function testDeletesOldSettings(): void
     {
         Metadata::make()->forceFill([
             'id' => 1,
@@ -495,7 +491,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseHas('user_settings', ['metadata_id' => 2]);
     }
 
-    public function test_doesnt_migrates_old_setting_to_old_setting_if_not_different(): void
+    public function testDoesntMigratesOldSettingToOldSettingIfNotDifferent(): void
     {
         Setting::name('foo')->default('bar');
 
@@ -516,7 +512,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseCount('user_settings', 3);
     }
 
-    public function test_migrates_old_setting_to_old_setting_with_procedure_when_different(): void
+    public function testMigratesOldSettingToOldSettingWithProcedureWhenDifferent(): void
     {
         Setting::name('foo')->default('bar');
 
@@ -537,7 +533,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseCount('user_settings', 3);
     }
 
-    public function test_migrates_old_setting_to_new_setting(): void
+    public function testMigratesOldSettingToNewSetting(): void
     {
         Setting::name('foo')->default('bar');
 
@@ -561,7 +557,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseCount('user_settings', 6);
     }
 
-    public function test_migrates_old_setting_to_new_setting_with_procedure(): void
+    public function testMigratesOldSettingToNewSettingWithProcedure(): void
     {
         Setting::name('foo')->default('bar');
 
@@ -585,7 +581,7 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertDatabaseCount('user_settings', 6);
     }
 
-    public function test_exception_when_migration_target_doesnt_exists(): void
+    public function testExceptionWhenMigrationTargetDoesntExists(): void
     {
         Metadata::make()->forceFill([
             'id' => 1,
@@ -606,7 +602,7 @@ class MigrateCommandTest extends BaseTestCase
             ->run();
     }
 
-    public function test_exception_when_models_use_same_table(): void
+    public function testExceptionWhenModelsUseSameTable(): void
     {
         Metadata::make()->forceFill([
             'name' => 'foo',
@@ -618,18 +614,18 @@ class MigrateCommandTest extends BaseTestCase
         ])->save();
 
         $this->data->models = new Collection([
-            new class extends Model {
+            new class() extends Model {
                 protected $table = 'foo';
             },
-            new class extends Model {
+            new class() extends Model {
                 protected $table = 'foo';
             },
-            new class extends Model {
+            new class() extends Model {
                 protected $table = 'bar';
             },
-            new class extends Model {
+            new class() extends Model {
                 protected $table = 'bar';
-            }
+            },
         ]);
 
         $this->artisan('settings:migrate')
@@ -638,7 +634,7 @@ class MigrateCommandTest extends BaseTestCase
             ->run();
     }
 
-    public function test_doesnt_regenerates_cache_when_no_changes(): void
+    public function testDoesntRegeneratesCacheWhenNoChanges(): void
     {
         config()->set('laraconfig.cache.enable', true);
 
@@ -661,7 +657,7 @@ class MigrateCommandTest extends BaseTestCase
             ->run();
     }
 
-    public function test_invalidates_cache_when_updates_setting(): void
+    public function testInvalidatesCacheWhenUpdatesSetting(): void
     {
         Setting::name('foo');
 
@@ -694,7 +690,7 @@ class MigrateCommandTest extends BaseTestCase
         static::assertNull($store->get('laraconfig|Tests\Dummies\DummyModel|1'));
     }
 
-    public function test_invalidates_cache_when_creates_setting(): void
+    public function testInvalidatesCacheWhenCreatesSetting(): void
     {
         Setting::name('foo');
 
@@ -727,7 +723,7 @@ class MigrateCommandTest extends BaseTestCase
         static::assertNull($store->get('laraconfig|Tests\Dummies\DummyModel|1'));
     }
 
-    public function test_invalidates_cache_when_deletes_setting(): void
+    public function testInvalidatesCacheWhenDeletesSetting(): void
     {
         Setting::name('foo');
 
@@ -758,7 +754,7 @@ class MigrateCommandTest extends BaseTestCase
         static::assertNull($store->get('laraconfig|Tests\Dummies\DummyModel|1'));
     }
 
-    public function test_flushes_cache(): void
+    public function testFlushesCache(): void
     {
         config()->set('laraconfig.cache.enable', true);
         config()->set('laraconfig.cache.store', 'foo');
@@ -778,7 +774,7 @@ class MigrateCommandTest extends BaseTestCase
             ->run();
     }
 
-    public function test_doesnt_flushes_cache_if_not_enabled(): void
+    public function testDoesntFlushesCacheIfNotEnabled(): void
     {
         config()->set('laraconfig.cache.enable', false);
 
@@ -794,7 +790,7 @@ class MigrateCommandTest extends BaseTestCase
             ->run();
     }
 
-    public function test_confirms_cache_flush_on_production(): void
+    public function testConfirmsCacheFlushOnProduction(): void
     {
         config()->set('laraconfig.cache.enable', true);
         config()->set('laraconfig.cache.store', 'foo');

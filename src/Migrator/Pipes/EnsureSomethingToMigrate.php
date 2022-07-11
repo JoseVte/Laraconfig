@@ -3,9 +3,9 @@
 namespace DarkGhostHunter\Laraconfig\Migrator\Pipes;
 
 use Closure;
-use DarkGhostHunter\Laraconfig\Migrator\Data;
-use Illuminate\Console\OutputStyle;
 use RuntimeException;
+use Illuminate\Console\OutputStyle;
+use DarkGhostHunter\Laraconfig\Migrator\Data;
 
 class EnsureSomethingToMigrate
 {
@@ -15,11 +15,6 @@ class EnsureSomethingToMigrate
 
     /**
      * Handles the Settings migration.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
-     * @param  \Closure  $next
-     *
-     * @return mixed
      */
     public function handle(Data $data, Closure $next): mixed
     {

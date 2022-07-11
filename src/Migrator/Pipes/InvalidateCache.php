@@ -3,14 +3,13 @@
 namespace DarkGhostHunter\Laraconfig\Migrator\Pipes;
 
 use Closure;
-use DarkGhostHunter\Laraconfig\Laraconfig;
+use Illuminate\Console\OutputStyle;
+use Illuminate\Support\LazyCollection;
+use Illuminate\Contracts\Cache\Factory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Config\Repository;
 use DarkGhostHunter\Laraconfig\Migrator\Data;
 use DarkGhostHunter\Laraconfig\MorphManySettings;
-use Illuminate\Console\OutputStyle;
-use Illuminate\Contracts\Cache\Factory;
-use Illuminate\Contracts\Config\Repository;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\LazyCollection;
 use Symfony\Component\Console\Input\InputInterface;
 
 class InvalidateCache
@@ -18,10 +17,10 @@ class InvalidateCache
     /**
      * RemoveOldMetadata constructor.
      *
-     * @param  \Illuminate\Contracts\Config\Repository  $config
-     * @param  \Illuminate\Console\OutputStyle  $output
-     * @param  \Illuminate\Contracts\Cache\Factory  $cache
-     * @param  \Symfony\Component\Console\Input\InputInterface  $input
+     * @param \Illuminate\Contracts\Config\Repository         $config
+     * @param \Illuminate\Console\OutputStyle                 $output
+     * @param \Illuminate\Contracts\Cache\Factory             $cache
+     * @param \Symfony\Component\Console\Input\InputInterface $input
      */
     public function __construct(
         protected Repository $config,
@@ -33,11 +32,6 @@ class InvalidateCache
 
     /**
      * Handles the Settings migration.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
-     * @param  \Closure  $next
-     *
-     * @return mixed
      */
     public function handle(Data $data, Closure $next): mixed
     {
@@ -53,27 +47,18 @@ class InvalidateCache
         return $next($data);
     }
 
-
     /**
      * Check if we should cycle through models to invalidate their keys.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
-     *
-     * @return bool
      */
     protected function shouldInvalidateCacheKeys(Data $data): bool
     {
         return $data->invalidateCache
-            && ! $this->input->getOption('flush-cache')
+            && !$this->input->getOption('flush-cache')
             && $this->config->get('laraconfig.cache.enable');
     }
 
     /**
      * Forget model cache keys.
-     *
-     * @param  \Illuminate\Support\Collection|\Illuminate\Database\Eloquent\Model[]  $models
-     *
-     * @return int
      */
     protected function forgetModelCacheKeys(Data $data): int
     {
@@ -93,7 +78,7 @@ class InvalidateCache
                 $store->forget($key);
                 $store->forget("$key:time");
 
-                $count++;
+                ++$count;
             }
         }
 
@@ -102,8 +87,6 @@ class InvalidateCache
 
     /**
      * Returns a query to retrieve all settings distinct by type and id.
-     *
-     * @return \Illuminate\Support\LazyCollection|\stdClass[]
      */
     protected function querySettable(Model $settable): LazyCollection
     {

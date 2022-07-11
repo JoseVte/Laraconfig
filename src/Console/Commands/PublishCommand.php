@@ -10,7 +10,7 @@ use Illuminate\Filesystem\Filesystem;
  */
 class PublishCommand extends Command
 {
-    protected const STUB_PATH = __DIR__ . '/../../../stubs/users.php';
+    protected const STUB_PATH = __DIR__.'/../../../stubs/users.php';
 
     /**
      * The console command name.
@@ -28,8 +28,6 @@ class PublishCommand extends Command
 
     /**
      * Migrator constructor.
-     *
-     * @return void
      */
     public function __construct(protected Filesystem $filesystem)
     {
@@ -38,14 +36,12 @@ class PublishCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
     public function handle(): void
     {
         $path = $this->getLaravel()->basePath('settings/users.php');
 
-        // Add the manifest if it doesn't exists, or if the user confirms the replace.
+        // Add the manifest if it doesn't exist, or if the user confirms the replacement.
         if ($this->filesystem->missing($path) || $this->confirm('A manifest file already exists. Overwrite?')) {
             $this->filesystem->ensureDirectoryExists($this->laravel->basePath('settings'));
             $this->filesystem->copy(static::STUB_PATH, $path);

@@ -6,19 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property-read int $id
- *
- * @property-read string $name
- * @property-read string $type
- * @property-read mixed $default
- * @property-read string $bag
- * @property-read string $group
- * @property-read bool $is_enabled
- *
- * @property-read \Illuminate\Support\Carbon $updated_at
- * @property-read \Illuminate\Support\Carbon $created_at
- *
- * @property-read \Illuminate\Database\Eloquent\Collection|\DarkGhostHunter\Laraconfig\Eloquent\Setting[] $settings
+ * @property int                                                                                     $id
+ * @property string                                                                                  $name
+ * @property string                                                                                  $type
+ * @property mixed                                                                                   $default
+ * @property string                                                                                  $bag
+ * @property string                                                                                  $group
+ * @property bool                                                                                    $is_enabled
+ * @property \Illuminate\Support\Carbon                                                              $updated_at
+ * @property \Illuminate\Support\Carbon                                                              $created_at
+ * @property \Illuminate\Database\Eloquent\Collection|\DarkGhostHunter\Laraconfig\Eloquent\Setting[] $settings
  *
  * @internal
  */
@@ -47,13 +44,13 @@ class Metadata extends Model
      */
     protected $casts = [
         'default' => Casts\DynamicCasting::class,
-        'is_enabled' => 'boolean'
+        'is_enabled' => 'boolean',
     ];
 
     /**
      * The settings this metadata has.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\DarkGhostHunter\Laraconfig\Eloquent\Setting
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function settings(): HasMany
     {

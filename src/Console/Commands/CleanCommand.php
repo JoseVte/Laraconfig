@@ -2,8 +2,8 @@
 
 namespace DarkGhostHunter\Laraconfig\Console\Commands;
 
-use DarkGhostHunter\Laraconfig\Eloquent\Setting;
 use Illuminate\Console\Command;
+use DarkGhostHunter\Laraconfig\Eloquent\Setting;
 
 /**
  * @internal
@@ -26,8 +26,6 @@ class CleanCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
     public function handle(): int
     {
@@ -38,8 +36,6 @@ class CleanCommand extends Command
 
     /**
      * Deletes orphaned settings.
-     *
-     * @return int
      */
     protected function deleteOrphanedSettings(): int
     {

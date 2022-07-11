@@ -2,13 +2,13 @@
 
 namespace DarkGhostHunter\Laraconfig\Eloquent\Casts;
 
-use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
-use DarkGhostHunter\Laraconfig\Eloquent\Setting;
 use DateTimeInterface;
-use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use DarkGhostHunter\Laraconfig\Eloquent\Setting;
+use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 /**
  * @internal
@@ -18,12 +18,9 @@ class DynamicCasting implements CastsAttributes
     /**
      * Transform the attribute from the underlying model values.
      *
-     * @param  \DarkGhostHunter\Laraconfig\Eloquent\Setting|\DarkGhostHunter\Laraconfig\Eloquent\Metadata  $model
-     * @param  string  $key
-     * @param  mixed  $value
-     * @param  array  $attributes
+     * @param \DarkGhostHunter\Laraconfig\Eloquent\Setting|\DarkGhostHunter\Laraconfig\Eloquent\Metadata $model
+     * @param mixed                                                                                      $value
      *
-     * @return array|bool|float|int|string|\Illuminate\Support\Collection|\DateTimeInterface|null
      * @throws \JsonException
      */
     public function get(
@@ -31,7 +28,8 @@ class DynamicCasting implements CastsAttributes
         string $key,
         $value,
         array $attributes
-    ): array|bool|float|int|string|Collection|DateTimeInterface|null {
+    ): array|bool|float|int|string|Collection|DateTimeInterface|null
+    {
         if (null === $value) {
             return null;
         }
@@ -54,12 +52,9 @@ class DynamicCasting implements CastsAttributes
     /**
      * Transform the attribute to its underlying model values.
      *
-     * @param  \DarkGhostHunter\Laraconfig\Eloquent\Setting|\DarkGhostHunter\Laraconfig\Eloquent\Metadata  $model
-     * @param  string  $key
-     * @param  mixed  $value
-     * @param  array  $attributes
+     * @param \DarkGhostHunter\Laraconfig\Eloquent\Setting|\DarkGhostHunter\Laraconfig\Eloquent\Metadata $model
+     * @param mixed                                                                                      $value
      *
-     * @return null|array|int|bool|float|string|\Illuminate\Support\Collection|\DateTimeInterface
      * @throws \JsonException
      */
     public function set(
@@ -67,7 +62,8 @@ class DynamicCasting implements CastsAttributes
         string $key,
         $value,
         array $attributes
-    ): null|array|int|bool|float|string|Collection|DateTimeInterface {
+    ): null|array|int|bool|float|string|Collection|DateTimeInterface
+    {
         if (null === $value) {
             return null;
         }

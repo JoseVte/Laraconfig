@@ -3,14 +3,14 @@
 namespace DarkGhostHunter\Laraconfig\Migrator\Pipes;
 
 use Closure;
-use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
-use DarkGhostHunter\Laraconfig\Eloquent\Setting;
-use DarkGhostHunter\Laraconfig\Migrator\Data;
-use DarkGhostHunter\Laraconfig\Registrar\Declaration;
-use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Console\OutputStyle;
+use DarkGhostHunter\Laraconfig\Migrator\Data;
+use DarkGhostHunter\Laraconfig\Eloquent\Setting;
+use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
+use DarkGhostHunter\Laraconfig\Registrar\Declaration;
 
 /**
  * @internal
@@ -20,8 +20,8 @@ class CreateNewMetadata
     /**
      * CreateNewMetadata constructor.
      *
-     * @param  \Illuminate\Console\OutputStyle  $output
-     * @param  \Illuminate\Support\Carbon  $now
+     * @param \Illuminate\Console\OutputStyle $output
+     * @param \Illuminate\Support\Carbon      $now
      */
     public function __construct(protected OutputStyle $output, protected Carbon $now)
     {
@@ -29,11 +29,6 @@ class CreateNewMetadata
 
     /**
      * Handles the Settings migration.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
-     * @param  \Closure  $next
-     *
-     * @return mixed
      */
     public function handle(Data $data, Closure $next): mixed
     {
@@ -45,7 +40,6 @@ class CreateNewMetadata
         // Create declarations not present in the metadata
         if ($toPersist->isNotEmpty()) {
             foreach ($toPersist as $declaration) {
-
                 // First, persist the declaration as metadata in the database.
                 $metadata = $this->createMetadata($declaration);
 
@@ -65,10 +59,6 @@ class CreateNewMetadata
 
     /**
      * Creates the metadata from the declaration.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Registrar\Declaration  $declaration
-     *
-     * @return \DarkGhostHunter\Laraconfig\Eloquent\Metadata
      */
     protected function createMetadata(Declaration $declaration): Metadata
     {
@@ -77,10 +67,6 @@ class CreateNewMetadata
 
     /**
      * Returns a collection of declarations that don't exist in the database.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
-     *
-     * @return \Illuminate\Support\Collection
      */
     protected function declarationsToPersist(Data $data): Collection
     {
@@ -90,22 +76,14 @@ class CreateNewMetadata
     }
 
     /**
-     * Fill the settings of the newly created Metadata.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Registrar\Declaration  $declaration
-     * @param  \DarkGhostHunter\Laraconfig\Eloquent\Metadata  $metadata
-     * @param  \Illuminate\Support\Collection  $models
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
-     *
-     * @return int
+     * Fill the settings with the newly created Metadata.
      */
     protected function fillSettingsFromMetadata(
         Declaration $declaration,
         Metadata $metadata,
         Collection $models,
         Data $data
-    ): int
-    {
+    ): int {
         // If the new metadata is not using "from", we will just create the settings
         // for each user with just simply one query, leaving the hard work to the
         // database engine instead of using this script.
@@ -121,20 +99,17 @@ class CreateNewMetadata
         }
 
         // If we're using "from" with a procedure, we will create a new Setting with
-        // the value of the old setting we're lazily querying, which will take time
+        // the value of the old setting we're lazily querying, which will take time,
         // but it will be safer than playing weird queries on the database itself.
         return $this->migrateSettings(
-            $declaration, $metadata, $data->metadata->get($declaration->from)
+            $declaration,
+            $metadata,
+            $data->metadata->get($declaration->from)
         );
     }
 
     /**
      * Fill the settings for each of the models using settings.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Eloquent\Metadata  $metadata
-     * @param  \Illuminate\Support\Collection|\Illuminate\Database\Eloquent\Model[]  $models
-     *
-     * @return int
      */
     protected function fillSettings(Metadata $metadata, Collection $models): int
     {
@@ -150,7 +125,7 @@ class CreateNewMetadata
                     ->select([
                     DB::raw("'{$metadata->getKey()}' as metadata_id"),
                     DB::raw("{$model->getKeyName()} as settable_id"),
-                    DB::raw("'". str_replace("\\\\", "\\", addcslashes($model->getMorphClass(), '\\'))."' as settable_type"),
+                    DB::raw("'".str_replace('\\\\', '\\', addcslashes($model->getMorphClass(), '\\'))."' as settable_type"),
                     DB::raw("'{$metadata->getRawOriginal('default', 'NULL')}' as value"),
                     DB::raw("'{$this->now->toDateTimeString()}' as created_at"),
                     DB::raw("'{$this->now->toDateTimeString()}' as updated_at"),
@@ -163,11 +138,6 @@ class CreateNewMetadata
 
     /**
      * Copy the settings for each of the models from the old setting.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Eloquent\Metadata  $new
-     * @param  \DarkGhostHunter\Laraconfig\Eloquent\Metadata  $old
-     *
-     * @return int
      */
     protected function copySettings(Metadata $new, Metadata $old): int
     {
@@ -189,12 +159,6 @@ class CreateNewMetadata
 
     /**
      * Feeds each old setting to a procedure that saves the new setting value.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Registrar\Declaration  $declaration
-     * @param  \DarkGhostHunter\Laraconfig\Eloquent\Metadata  $new
-     * @param  \DarkGhostHunter\Laraconfig\Eloquent\Metadata  $old
-     *
-     * @return int
      */
     protected function migrateSettings(Declaration $declaration, Metadata $new, Metadata $old): int
     {
@@ -213,7 +177,7 @@ class CreateNewMetadata
                     'updated_at' => $this->now->toDateTimeString(),
                 ]);
 
-            $affected++;
+            ++$affected;
         }
 
         return $affected;

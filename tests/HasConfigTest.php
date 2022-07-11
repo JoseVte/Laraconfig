@@ -2,26 +2,25 @@
 
 namespace Tests;
 
-use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
-use DarkGhostHunter\Laraconfig\Eloquent\Scopes\FilterBags;
-use DarkGhostHunter\Laraconfig\Eloquent\Setting;
-use DarkGhostHunter\Laraconfig\HasConfig;
-use DarkGhostHunter\Laraconfig\SettingsCollection;
-use Error;
-use Exception;
-use Illuminate\Contracts\Cache\Factory;
-use Illuminate\Contracts\Cache\Repository;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\HigherOrderCollectionProxy;
 use Mockery;
+use Exception;
 use RuntimeException;
 use Tests\Dummies\DummyModel;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Contracts\Cache\Factory;
+use Illuminate\Database\Eloquent\Model;
+use DarkGhostHunter\Laraconfig\HasConfig;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use DarkGhostHunter\Laraconfig\Eloquent\Setting;
+use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
+use DarkGhostHunter\Laraconfig\SettingsCollection;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\HigherOrderCollectionProxy;
+use DarkGhostHunter\Laraconfig\Eloquent\Scopes\FilterBags;
 
 class HasConfigTest extends BaseTestCase
 {
@@ -35,32 +34,30 @@ class HasConfigTest extends BaseTestCase
         parent::setUp();
 
         $this->metadata = Metadata::make()->forceFill([
-            'name'    => 'foo',
-            'type'    => 'string',
+            'name' => 'foo',
+            'type' => 'string',
             'default' => 'bar',
-            'bag'     => 'users',
-            'group'   => 'default',
+            'bag' => 'users',
+            'group' => 'default',
         ]);
 
         $this->metadata->save();
 
         $this->setting = Setting::make()->forceFill([
-            'settable_id'   => 1,
+            'settable_id' => 1,
             'settable_type' => 'bar',
-            'metadata_id'   => 1,
+            'metadata_id' => 1,
         ]);
 
         DummyModel::forceCreate([
-            'name'     => 'john',
-            'email'    => 'john@email.com',
+            'name' => 'john',
+            'email' => 'john@email.com',
             'password' => '123456',
         ]);
     }
 
     /**
      * Define database migrations.
-     *
-     * @return void
      */
     protected function defineDatabaseMigrations(): void
     {
@@ -68,22 +65,22 @@ class HasConfigTest extends BaseTestCase
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
 
-    public function test_creates_settings_on_creation(): void
+    public function testCreatesSettingsOnCreation(): void
     {
         $this->assertDatabaseCount('user_settings', 1);
 
         DummyModel::forceCreate([
-            'name'     => 'maria',
-            'email'    => 'maria@email.com',
+            'name' => 'maria',
+            'email' => 'maria@email.com',
             'password' => '123456',
         ]);
 
         $this->assertDatabaseCount('user_settings', 2);
     }
 
-    public function test_initializes_manually(): void
+    public function testInitializesManually(): void
     {
-        $model = new class extends Model {
+        $model = new class() extends Model {
             use HasConfig;
 
             protected $table = 'users';
@@ -100,8 +97,8 @@ class HasConfigTest extends BaseTestCase
         };
 
         $instance = $model->forceCreate([
-            'name'     => 'dummy',
-            'email'    => 'dummy@email.com',
+            'name' => 'dummy',
+            'email' => 'dummy@email.com',
             'password' => '123456',
         ]);
 
@@ -112,7 +109,7 @@ class HasConfigTest extends BaseTestCase
         $this->assertDatabaseHas('user_settings', ['settable_id' => $instance->id]);
     }
 
-    public function test_doesnt_initializes_again(): void
+    public function testDoesntInitializesAgain(): void
     {
         $user = DummyModel::find(1);
 
@@ -124,7 +121,7 @@ class HasConfigTest extends BaseTestCase
         $this->assertDatabaseHas('user_settings', ['value' => 'quz']);
     }
 
-    public function test_initializes_forcefully(): void
+    public function testInitializesForcefully(): void
     {
         $user = DummyModel::find(1);
 
@@ -138,7 +135,7 @@ class HasConfigTest extends BaseTestCase
         $this->assertDatabaseHas('user_settings', ['value' => 'bar']);
     }
 
-    public function test_model_sets_config(): void
+    public function testModelSetsConfig(): void
     {
         $user = DummyModel::find(1);
 
@@ -147,14 +144,14 @@ class HasConfigTest extends BaseTestCase
         $this->assertDatabaseHas('user_settings', ['id' => 1, 'value' => 'quz']);
     }
 
-    public function test_model_get_config_value(): void
+    public function testModelGetConfigValue(): void
     {
         $user = DummyModel::find(1);
 
         static::assertEquals('bar', $user->settings->value('foo'));
     }
 
-    public function test_enables_and_disables_setting(): void
+    public function testEnablesAndDisablesSetting(): void
     {
         $user = DummyModel::find(1);
 
@@ -169,7 +166,7 @@ class HasConfigTest extends BaseTestCase
         static::assertFalse($user->settings->isDisabled('foo'));
     }
 
-    public function test_model_sets_config_forcefully(): void
+    public function testModelSetsConfigForcefully(): void
     {
         $user = DummyModel::find(1);
 
@@ -179,7 +176,7 @@ class HasConfigTest extends BaseTestCase
         static::assertEquals('quz', $user->settings->value('foo'));
     }
 
-    public function test_model_sets_config_not_forcefully(): void
+    public function testModelSetsConfigNotForcefully(): void
     {
         /** @var \DarkGhostHunter\Laraconfig\HasConfig $user */
         $user = DummyModel::find(1);
@@ -207,39 +204,39 @@ class HasConfigTest extends BaseTestCase
         static::assertEquals('quz', $user->settings->value('foo'));
     }
 
-    public function test_model_gets_config(): void
+    public function testModelGetsConfig(): void
     {
         $user = DummyModel::find(1);
 
         static::assertEquals('bar', $user->settings->value('foo'));
     }
 
-    public function test_returns_all_settings(): void
+    public function testReturnsAllSettings(): void
     {
         Metadata::forceCreate([
-            'name'  => 'bar',
-            'type'  => 'string',
-            'bag'   => 'users',
+            'name' => 'bar',
+            'type' => 'string',
+            'bag' => 'users',
             'group' => 'default',
         ]);
 
         Setting::forceCreate([
-            'settable_id'   => 1,
+            'settable_id' => 1,
             'settable_type' => DummyModel::class,
-            'metadata_id'   => 2,
+            'metadata_id' => 2,
         ]);
 
         Metadata::forceCreate([
-            'name'  => 'baz',
-            'type'  => 'string',
-            'bag'   => 'users',
+            'name' => 'baz',
+            'type' => 'string',
+            'bag' => 'users',
             'group' => 'default',
         ]);
 
         Setting::forceCreate([
-            'settable_id'   => 1,
+            'settable_id' => 1,
             'settable_type' => DummyModel::class,
-            'metadata_id'   => 3,
+            'metadata_id' => 3,
         ]);
 
         $user = DummyModel::find(1);
@@ -250,32 +247,32 @@ class HasConfigTest extends BaseTestCase
         static::assertTrue($user->settings->contains('name', 'baz'));
     }
 
-    public function test_returns_only_some_settings(): void
+    public function testReturnsOnlySomeSettings(): void
     {
         Metadata::forceCreate([
-            'name'  => 'bar',
-            'type'  => 'string',
-            'bag'   => 'users',
+            'name' => 'bar',
+            'type' => 'string',
+            'bag' => 'users',
             'group' => 'default',
         ]);
 
         Setting::forceCreate([
-            'settable_id'   => 1,
+            'settable_id' => 1,
             'settable_type' => DummyModel::class,
-            'metadata_id'   => 2,
+            'metadata_id' => 2,
         ]);
 
         Metadata::forceCreate([
-            'name'  => 'baz',
-            'type'  => 'string',
-            'bag'   => 'users',
+            'name' => 'baz',
+            'type' => 'string',
+            'bag' => 'users',
             'group' => 'default',
         ]);
 
         Setting::forceCreate([
-            'settable_id'   => 1,
+            'settable_id' => 1,
             'settable_type' => DummyModel::class,
-            'metadata_id'   => 3,
+            'metadata_id' => 3,
         ]);
 
         $user = DummyModel::find(1);
@@ -287,32 +284,32 @@ class HasConfigTest extends BaseTestCase
         static::assertTrue($settings->contains('name', 'baz'));
     }
 
-    public function test_returns_except_some_settings(): void
+    public function testReturnsExceptSomeSettings(): void
     {
         Metadata::forceCreate([
-            'name'  => 'bar',
-            'type'  => 'string',
-            'bag'   => 'users',
+            'name' => 'bar',
+            'type' => 'string',
+            'bag' => 'users',
             'group' => 'default',
         ]);
 
         Setting::forceCreate([
-            'settable_id'   => 1,
+            'settable_id' => 1,
             'settable_type' => DummyModel::class,
-            'metadata_id'   => 2,
+            'metadata_id' => 2,
         ]);
 
         Metadata::forceCreate([
-            'name'  => 'baz',
-            'type'  => 'string',
-            'bag'   => 'users',
+            'name' => 'baz',
+            'type' => 'string',
+            'bag' => 'users',
             'group' => 'default',
         ]);
 
         Setting::forceCreate([
-            'settable_id'   => 1,
+            'settable_id' => 1,
             'settable_type' => DummyModel::class,
-            'metadata_id'   => 3,
+            'metadata_id' => 3,
         ]);
 
         $user = DummyModel::find(1);
@@ -323,7 +320,7 @@ class HasConfigTest extends BaseTestCase
         static::assertTrue($settings->contains('name', 'foo'));
     }
 
-    public function test_check_has_setting_name(): void
+    public function testCheckHasSettingName(): void
     {
         $user = DummyModel::find(1);
 
@@ -331,7 +328,7 @@ class HasConfigTest extends BaseTestCase
         static::assertFalse($user->settings->has('bar'));
     }
 
-    public function test_checks_value_same_as_setting(): void
+    public function testChecksValueSameAsSetting(): void
     {
         $user = DummyModel::find(1);
 
@@ -339,13 +336,13 @@ class HasConfigTest extends BaseTestCase
         static::assertFalse($user->settings->is('foo', 'not bar'));
     }
 
-    public function test_model_sets_bag(): void
+    public function testModelSetsBag(): void
     {
         $user = DummyModel::find(1);
 
         static::assertEquals(['users'], $user->settings()->bags());
 
-        $model = new class extends Model {
+        $model = new class() extends Model {
             use HasConfig;
 
             protected $table = 'users';
@@ -359,23 +356,23 @@ class HasConfigTest extends BaseTestCase
         static::assertEquals(['test-bag', 'users'], $model->settings()->bags());
     }
 
-    public function test_filters_settings_by_model_bags(): void
+    public function testFiltersSettingsByModelBags(): void
     {
         Metadata::forceCreate([
-            'name'  => 'bar',
-            'type'  => 'string',
+            'name' => 'bar',
+            'type' => 'string',
             'group' => 'default',
-            'bag'   => 'test-bag',
+            'bag' => 'test-bag',
         ]);
 
         Metadata::forceCreate([
-            'name'  => 'baz',
-            'type'  => 'string',
+            'name' => 'baz',
+            'type' => 'string',
             'group' => 'default',
-            'bag'   => 'test-bag',
+            'bag' => 'test-bag',
         ]);
 
-        $model = new class extends Model {
+        $model = new class() extends Model {
             use HasConfig;
 
             protected $table = 'users';
@@ -388,15 +385,15 @@ class HasConfigTest extends BaseTestCase
 
         /** @var \DarkGhostHunter\Laraconfig\HasConfig $instance */
         $instance = $model->forceCreate([
-            'name'     => 'dummy',
-            'email'    => 'dummy@email.com',
+            'name' => 'dummy',
+            'email' => 'dummy@email.com',
             'password' => '123456',
         ]);
 
         static::assertCount(2, $instance->settings);
     }
 
-    public function test_sets_default(): void
+    public function testSetsDefault(): void
     {
         $user = DummyModel::find(1);
 
@@ -407,7 +404,7 @@ class HasConfigTest extends BaseTestCase
         static::assertEquals('bar', $user->settings->value('foo'));
     }
 
-    public function test_sets_default_from_database(): void
+    public function testSetsDefaultFromDatabase(): void
     {
         /** @var \DarkGhostHunter\Laraconfig\Eloquent\Setting $setting */
         $setting = Setting::find(1);
@@ -419,7 +416,7 @@ class HasConfigTest extends BaseTestCase
         static::assertEquals('bar', Setting::find(1)->value);
     }
 
-    public function test_check_if_null(): void
+    public function testCheckIfNull(): void
     {
         $user = DummyModel::find(1);
 
@@ -432,14 +429,14 @@ class HasConfigTest extends BaseTestCase
         static::assertTrue($user->settings->isNull('foo'));
     }
 
-    public function test_doesnt_invalidates_cache_if_cache_disabled(): void
+    public function testDoesntInvalidatesCacheIfCacheDisabled(): void
     {
         $this->mock(Factory::class)->shouldNotReceive('forget');
 
         DummyModel::find(1)->settings->cache?->invalidateIfNotInvalidated();
     }
 
-    public function test_can_invalidate_cache_if_enabled(): void
+    public function testCanInvalidateCacheIfEnabled(): void
     {
         config()->set('laraconfig.cache.enable', true);
 
@@ -469,14 +466,14 @@ class HasConfigTest extends BaseTestCase
         static::assertFalse($user->settings->regeneratesOnExit);
     }
 
-    public function test_doesnt_regenerates_cache_if_cache_disabled(): void
+    public function testDoesntRegeneratesCacheIfCacheDisabled(): void
     {
         $this->mock(Factory::class)->shouldNotReceive('store');
 
         DummyModel::find(1)->settings->regenerate();
     }
 
-    public function test_should_regenerate_cache_if_cache_enabled(): void
+    public function testShouldRegenerateCacheIfCacheEnabled(): void
     {
         config()->set('laraconfig.cache.enable', true);
 
@@ -509,6 +506,7 @@ class HasConfigTest extends BaseTestCase
                 static::assertArrayHasKey('laraconfig|'.DummyModel::class.'|1', $array);
                 static::assertArrayHasKey('laraconfig|'.DummyModel::class.'|1:time', $array);
                 static::assertEquals(60 * 60 * 3, $ttl);
+
                 return true;
             })
             ->andReturns();
@@ -520,7 +518,7 @@ class HasConfigTest extends BaseTestCase
         static::assertFalse($user->settings->regeneratesOnExit);
     }
 
-    public function test_should_not_regenerate_cache_if_is_not_fresher(): void
+    public function testShouldNotRegenerateCacheIfIsNotFresher(): void
     {
         config()->set('laraconfig.cache.enable', true);
 
@@ -554,7 +552,7 @@ class HasConfigTest extends BaseTestCase
         static::assertFalse($user->settings->regeneratesOnExit);
     }
 
-    public function test_doesnt_invalidates_cache_on_save_if_cache_disabled(): void
+    public function testDoesntInvalidatesCacheOnSaveIfCacheDisabled(): void
     {
         $this->mock(Factory::class)->shouldNotReceive('store');
 
@@ -564,7 +562,7 @@ class HasConfigTest extends BaseTestCase
         $user->settings->disable('foo');
     }
 
-    public function test_invalidates_cache_only_once_on_set_if_cache_enabled(): void
+    public function testInvalidatesCacheOnlyOnceOnSetIfCacheEnabled(): void
     {
         config()->set('laraconfig.cache.enable', true);
 
@@ -599,6 +597,7 @@ class HasConfigTest extends BaseTestCase
                 static::assertArrayHasKey('laraconfig|'.DummyModel::class.'|1', $array);
                 static::assertArrayHasKey('laraconfig|'.DummyModel::class.'|1:time', $array);
                 static::assertEquals(60 * 60 * 3, $ttl);
+
                 return true;
             })
             ->once();
@@ -617,7 +616,7 @@ class HasConfigTest extends BaseTestCase
         $user->settings->regeneratesOnExit = false;
     }
 
-    public function test_invalidates_cache_only_once_on_disable_if_cache_enabled(): void
+    public function testInvalidatesCacheOnlyOnceOnDisableIfCacheEnabled(): void
     {
         config()->set('laraconfig.cache.enable', true);
 
@@ -649,6 +648,7 @@ class HasConfigTest extends BaseTestCase
                 static::assertArrayHasKey('laraconfig|'.DummyModel::class.'|1', $array);
                 static::assertArrayHasKey('laraconfig|'.DummyModel::class.'|1:time', $array);
                 static::assertEquals(60 * 60 * 3, $ttl);
+
                 return true;
             })
             ->once();
@@ -667,7 +667,7 @@ class HasConfigTest extends BaseTestCase
         $user->settings->regeneratesOnExit = false;
     }
 
-    public function test_saves_and_retrieves_settings_from_cache(): void
+    public function testSavesAndRetrievesSettingsFromCache(): void
     {
         Cache::store('file')->forget('laraconfig|'.DummyModel::class.'|1');
 
@@ -690,39 +690,39 @@ class HasConfigTest extends BaseTestCase
         static::assertSame('quz', $setting->value);
     }
 
-    public function test_groups_settings(): void
+    public function testGroupsSettings(): void
     {
         Setting::forceCreate([
             'settable_type' => DummyModel::class,
             'settable_id' => 1,
             'metadata_id' => Metadata::forceCreate([
-                'name'  => 'baz',
-                'type'  => 'string',
-                'bag'   => 'users',
+                'name' => 'baz',
+                'type' => 'string',
+                'bag' => 'users',
                 'group' => 'default',
-            ])->id
+            ])->id,
         ]);
 
         Setting::forceCreate([
             'settable_type' => DummyModel::class,
             'settable_id' => 1,
             'metadata_id' => Metadata::forceCreate([
-                'name'  => 'quz',
-                'type'  => 'string',
-                'bag'   => 'users',
+                'name' => 'quz',
+                'type' => 'string',
+                'bag' => 'users',
                 'group' => 'test-default',
-            ])->id
+            ])->id,
         ]);
 
         Setting::forceCreate([
             'settable_type' => DummyModel::class,
             'settable_id' => 1,
             'metadata_id' => Metadata::forceCreate([
-                'name'  => 'qux',
-                'type'  => 'string',
-                'bag'   => 'users',
+                'name' => 'qux',
+                'type' => 'string',
+                'bag' => 'users',
                 'group' => 'test-default',
-            ])->id
+            ])->id,
         ]);
 
         $user = DummyModel::find(1);
@@ -735,30 +735,30 @@ class HasConfigTest extends BaseTestCase
         static::assertCount(2, $groups['test-default']);
     }
 
-    public function test_filters_bags(): void
+    public function testFiltersBags(): void
     {
         Metadata::forceCreate([
-            'name'  => 'baz',
-            'type'  => 'string',
-            'bag'   => 'users',
+            'name' => 'baz',
+            'type' => 'string',
+            'bag' => 'users',
             'group' => 'default',
         ]);
 
         Metadata::forceCreate([
-            'name'  => 'quz',
-            'type'  => 'string',
-            'bag'   => 'test-bag',
+            'name' => 'quz',
+            'type' => 'string',
+            'bag' => 'test-bag',
             'group' => 'test-default',
         ]);
 
         Metadata::forceCreate([
-            'name'  => 'qux',
-            'type'  => 'string',
-            'bag'   => 'test-bag',
+            'name' => 'qux',
+            'type' => 'string',
+            'bag' => 'test-bag',
             'group' => 'test-default',
         ]);
 
-        $user = new class extends Model {
+        $user = new class() extends Model {
             use HasConfig;
 
             protected $table = 'users';
@@ -787,7 +787,7 @@ class HasConfigTest extends BaseTestCase
         $this->assertDatabaseHas('user_settings', ['id' => 5, 'metadata_id' => 4]);
     }
 
-    public function test_cache_avoids_data_races(): void
+    public function testCacheAvoidsDataRaces(): void
     {
         config()->set('laraconfig.cache.enable', true);
         config()->set('laraconfig.cache.automatic', false);
@@ -807,7 +807,7 @@ class HasConfigTest extends BaseTestCase
         static::assertEquals('qux', cache()->get('laraconfig|'.DummyModel::class.'|1')->get('foo')->value);
     }
 
-    public function test_checks_settings_has_key(): void
+    public function testChecksSettingsHasKey(): void
     {
         $user = DummyModel::find(1);
 
@@ -815,7 +815,7 @@ class HasConfigTest extends BaseTestCase
         static::assertFalse(isset($user->settings->bar));
     }
 
-    public function test_sets_value_dynamically(): void
+    public function testSetsValueDynamically(): void
     {
         $user = DummyModel::find(1);
 
@@ -824,7 +824,7 @@ class HasConfigTest extends BaseTestCase
         $this->assertDatabaseHas('user_settings', ['id' => 1, 'value' => 'quz']);
     }
 
-    public function test_sets_doesnt_sets_property_dynamically_into_collection(): void
+    public function testSetsDoesntSetsPropertyDynamicallyIntoCollection(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage("The setting [invalid] doesn't exist.");
@@ -836,14 +836,14 @@ class HasConfigTest extends BaseTestCase
         $user->settings->invalid;
     }
 
-    public function test_gets_value_dynamically(): void
+    public function testGetsValueDynamically(): void
     {
         $user = DummyModel::find(1);
 
         static::assertEquals('bar', $user->settings->foo);
     }
 
-    public function test_exception_when_dynamic_get_doesnt_exists(): void
+    public function testExceptionWhenDynamicGetDoesntExists(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Property [invalid] does not exist on this collection instance');
@@ -853,42 +853,42 @@ class HasConfigTest extends BaseTestCase
         $user->settings->invalid;
     }
 
-    public function test_get_allows_pass_to_higher_order_proxy(): void
+    public function testGetAllowsPassToHigherOrderProxy(): void
     {
         $user = DummyModel::find(1);
 
         static::assertInstanceOf(HigherOrderCollectionProxy::class, $user->settings->map);
     }
 
-    public function test_deletes_settings_when_model_deletes_itself(): void
+    public function testDeletesSettingsWhenModelDeletesItself(): void
     {
         DummyModel::find(1)->delete();
 
         $this->assertDatabaseMissing('user_settings', ['settable_id' => 1]);
     }
 
-    public function test_deletes_settings_when_model_force_deletes_itself(): void
+    public function testDeletesSettingsWhenModelForceDeletesItself(): void
     {
         Metadata::forceCreate([
-            'name'    => 'bar',
-            'type'    => 'string',
+            'name' => 'bar',
+            'type' => 'string',
             'default' => 'quz',
-            'bag'     => 'test-users',
-            'group'   => 'default',
+            'bag' => 'test-users',
+            'group' => 'default',
         ]);
 
         Schema::table('users', function (Blueprint $table) {
             $table->softDeletes();
         });
 
-        $user = new class extends Model {
+        $user = new class() extends Model {
             use SoftDeletes;
             use HasConfig;
             protected $table = 'users';
             protected $attributes = [
                 'name' => 'john',
                 'email' => 'email@email.com',
-                'password' => '123456'
+                'password' => '123456',
             ];
         };
 
@@ -909,19 +909,19 @@ class HasConfigTest extends BaseTestCase
         $this->assertDatabaseMissing('user_settings', ['settable_id' => 2]);
     }
 
-    public function test_allows_for_removing_bags_filter_on_query(): void
+    public function testAllowsForRemovingBagsFilterOnQuery(): void
     {
         Setting::forceCreate([
             'value' => 'quz',
             'settable_id' => 1,
             'settable_type' => (new DummyModel())->getMorphClass(),
-            'metadata_id' =>  Metadata::forceCreate([
-                'name'    => 'bar',
-                'type'    => 'string',
+            'metadata_id' => Metadata::forceCreate([
+                'name' => 'bar',
+                'type' => 'string',
                 'default' => 'quz',
-                'bag'     => 'test-users',
-                'group'   => 'default',
-            ])->getKey()
+                'bag' => 'test-users',
+                'group' => 'default',
+            ])->getKey(),
         ]);
 
         $user = DummyModel::find(1);
@@ -931,26 +931,28 @@ class HasConfigTest extends BaseTestCase
         static::assertCount(2, $settings);
     }
 
-    public function test_allows_to_disable_bag_filter(): void
+    public function testAllowsToDisableBagFilter(): void
     {
-       Metadata::forceCreate([
-            'name'    => 'bar',
-            'type'    => 'string',
+        Metadata::forceCreate([
+            'name' => 'bar',
+            'type' => 'string',
             'default' => 'quz',
-            'bag'     => 'test-users',
-            'group'   => 'default',
+            'bag' => 'test-users',
+            'group' => 'default',
         ]);
 
-        $user = new class extends Model {
+        $user = new class() extends Model {
             use SoftDeletes;
             use HasConfig;
             protected $table = 'users';
             protected $attributes = [
                 'name' => 'john',
                 'email' => 'email@email.com',
-                'password' => '123456'
+                'password' => '123456',
             ];
-            public function filterBags() {
+
+            public function filterBags()
+            {
                 return [];
             }
         };

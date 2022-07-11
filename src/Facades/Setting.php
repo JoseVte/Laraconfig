@@ -2,8 +2,8 @@
 
 namespace DarkGhostHunter\Laraconfig\Facades;
 
-use DarkGhostHunter\Laraconfig\Registrar\SettingRegistrar;
 use Illuminate\Support\Facades\Facade;
+use DarkGhostHunter\Laraconfig\Registrar\SettingRegistrar;
 
 /**
  * @method static \Illuminate\Support\Collection|\DarkGhostHunter\Laraconfig\Eloquent\Setting[] getSettings()
@@ -13,8 +13,6 @@ class Setting extends Facade
 {
     /**
      * Get the registered name of the component.
-     *
-     * @return string
      */
     protected static function getFacadeAccessor(): string
     {

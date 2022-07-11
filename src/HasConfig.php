@@ -3,11 +3,10 @@
 namespace DarkGhostHunter\Laraconfig;
 
 use Illuminate\Database\Eloquent\Model;
-
 use function method_exists;
 
 /**
- * @property-read \DarkGhostHunter\Laraconfig\SettingsCollection<\DarkGhostHunter\Laraconfig\Eloquent\Setting>|\DarkGhostHunter\Laraconfig\Eloquent\Setting[] $settings
+ * @property \DarkGhostHunter\Laraconfig\SettingsCollection<\DarkGhostHunter\Laraconfig\Eloquent\Setting>|\DarkGhostHunter\Laraconfig\Eloquent\Setting[] $settings
  *
  * @method \Illuminate\Database\Eloquent\Builder|static whereConfig(string|array $name, string $operator = null, $value = null, string $boolean = 'and')
  * @method \Illuminate\Database\Eloquent\Builder|static orWhereConfig(string|array $name, string $operator = null, $value = null)
@@ -28,14 +27,16 @@ trait HasConfig
         $table = $instance->getTable();
 
         return new MorphManySettings(
-            $instance->newQuery(), $this, $table.'.'.$type, $table.'.'.$id, $this->getKeyName()
+            $instance->newQuery(),
+            $this,
+            $table.'.'.$type,
+            $table.'.'.$id,
+            $this->getKeyName()
         );
     }
 
     /**
      * Boot the current trait.
-     *
-     * @return void
      */
     protected static function bootHasConfig(): void
     {

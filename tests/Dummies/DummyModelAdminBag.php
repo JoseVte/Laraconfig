@@ -2,8 +2,8 @@
 
 namespace Tests\Dummies;
 
-use DarkGhostHunter\Laraconfig\HasConfig;
 use Illuminate\Database\Eloquent\Model;
+use DarkGhostHunter\Laraconfig\HasConfig;
 
 class DummyModelAdminBag extends Model
 {
@@ -11,7 +11,8 @@ class DummyModelAdminBag extends Model
 
     protected $table = 'users';
 
-    protected function getSettingBags(): string|array {
+    protected function getSettingBags(): string|array
+    {
         return ['admins'];
     }
 }

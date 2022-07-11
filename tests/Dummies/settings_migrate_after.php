@@ -1,8 +1,8 @@
 <?php
 
-use DarkGhostHunter\Laraconfig\Eloquent\Setting as Model;
-use DarkGhostHunter\Laraconfig\Facades\Setting;
 use Illuminate\Support\Arr;
+use DarkGhostHunter\Laraconfig\Facades\Setting;
+use DarkGhostHunter\Laraconfig\Eloquent\Setting as Model;
 
 Setting::name('foo')->default('new_default');
 

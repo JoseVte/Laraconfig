@@ -2,11 +2,11 @@
 
 namespace DarkGhostHunter\Laraconfig\Console\Commands;
 
-use DarkGhostHunter\Laraconfig\Migrator\Data;
-use DarkGhostHunter\Laraconfig\Migrator\Migrator;
+use RuntimeException;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
-use RuntimeException;
+use DarkGhostHunter\Laraconfig\Migrator\Data;
+use DarkGhostHunter\Laraconfig\Migrator\Migrator;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -34,8 +34,8 @@ class MigrateCommand extends Command
     /**
      * MigrateCommand constructor.
      *
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Migrator  $migrator
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
+     * @param \DarkGhostHunter\Laraconfig\Migrator\Migrator $migrator
+     * @param \DarkGhostHunter\Laraconfig\Migrator\Data     $data
      */
     public function __construct(protected Migrator $migrator, protected Data $data)
     {
@@ -44,8 +44,6 @@ class MigrateCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
     public function handle(): int
     {
@@ -57,6 +55,7 @@ class MigrateCommand extends Command
             $this->migrator->send($this->data)->thenReturn();
         } catch (RuntimeException $exception) {
             $this->error($exception->getMessage());
+
             return 1;
         }
 

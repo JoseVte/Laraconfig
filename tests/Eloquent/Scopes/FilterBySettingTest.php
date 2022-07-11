@@ -2,15 +2,13 @@
 
 namespace Tests\Eloquent\Scopes;
 
-use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
-use DarkGhostHunter\Laraconfig\Eloquent\Scopes\AddMetadata;
-use DarkGhostHunter\Laraconfig\Eloquent\Setting;
-use DarkGhostHunter\Laraconfig\HasConfig;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\BaseTestCase;
 use Tests\Dummies\DummyModel;
+use Illuminate\Database\Eloquent\Model;
+use DarkGhostHunter\Laraconfig\HasConfig;
+use DarkGhostHunter\Laraconfig\Eloquent\Setting;
+use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class FilterBySettingTest extends BaseTestCase
 {
@@ -18,8 +16,6 @@ class FilterBySettingTest extends BaseTestCase
 
     /**
      * Define database migrations.
-     *
-     * @return void
      */
     protected function defineDatabaseMigrations(): void
     {
@@ -34,11 +30,11 @@ class FilterBySettingTest extends BaseTestCase
             'settable_type' => $model->getMorphClass(),
             'settable_id' => $model->getKey(),
             'metadata_id' => Metadata::forceCreate([
-                'name'  => 'foo',
-                'type'  => 'string',
+                'name' => 'foo',
+                'type' => 'string',
                 'group' => 'default',
-                'bag'   => 'users',
-            ])->id
+                'bag' => 'users',
+            ])->id,
         ]);
 
         Setting::forceCreate([
@@ -46,11 +42,11 @@ class FilterBySettingTest extends BaseTestCase
             'settable_type' => $model->getMorphClass(),
             'settable_id' => $model->getKey(),
             'metadata_id' => Metadata::forceCreate([
-                'name'  => 'baz',
-                'type'  => 'string',
+                'name' => 'baz',
+                'type' => 'string',
                 'group' => 'default',
-                'bag'   => 'users',
-            ])->id
+                'bag' => 'users',
+            ])->id,
         ]);
 
         Setting::forceCreate([
@@ -58,11 +54,11 @@ class FilterBySettingTest extends BaseTestCase
             'settable_type' => $model->getMorphClass(),
             'settable_id' => $model->getKey(),
             'metadata_id' => Metadata::forceCreate([
-                'name'  => 'quz',
-                'type'  => 'string',
+                'name' => 'quz',
+                'type' => 'string',
                 'group' => 'default',
-                'bag'   => 'test-users',
-            ])->id
+                'bag' => 'test-users',
+            ])->id,
         ]);
 
         Setting::forceCreate([
@@ -70,15 +66,15 @@ class FilterBySettingTest extends BaseTestCase
             'settable_type' => $model->getMorphClass(),
             'settable_id' => $model->getKey(),
             'metadata_id' => Metadata::forceCreate([
-                'name'  => 'qux',
-                'type'  => 'string',
+                'name' => 'qux',
+                'type' => 'string',
                 'group' => 'default',
-                'bag'   => 'test-users',
-            ])->id
+                'bag' => 'test-users',
+            ])->id,
         ]);
     }
 
-    public function test_filters_user_by_config(): void
+    public function testFiltersUserByConfig(): void
     {
         $user = DummyModel::make()->forceFill([
             'name' => 'john',
@@ -113,9 +109,9 @@ class FilterBySettingTest extends BaseTestCase
         static::assertCount(0, $users);
     }
 
-    public function test_filters_bags_of_user_on_query(): void
+    public function testFiltersBagsOfUserOnQuery(): void
     {
-        $user = new class extends Model {
+        $user = new class() extends Model {
             use HasConfig;
             protected $attributes = [
                 'name' => 'john',
@@ -162,7 +158,7 @@ class FilterBySettingTest extends BaseTestCase
         static::assertCount(1, $users);
     }
 
-    public function test_accepts_where_with_operator_and_or(): void
+    public function testAcceptsWhereWithOperatorAndOr(): void
     {
         $user = DummyModel::make()->forceFill([
             'name' => 'john',
@@ -179,7 +175,7 @@ class FilterBySettingTest extends BaseTestCase
         ]);
 
         Setting::query()->whereKey(1)->update([
-            'value' => 2
+            'value' => 2,
         ]);
 
         static::assertCount(1, DummyModel::whereConfig('foo', '>', 1)->get());

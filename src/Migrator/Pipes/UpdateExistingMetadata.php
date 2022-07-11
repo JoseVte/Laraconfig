@@ -3,12 +3,12 @@
 namespace DarkGhostHunter\Laraconfig\Migrator\Pipes;
 
 use Closure;
-use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
-use DarkGhostHunter\Laraconfig\Eloquent\Setting;
-use DarkGhostHunter\Laraconfig\Migrator\Data;
-use DarkGhostHunter\Laraconfig\Registrar\Declaration;
-use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
+use Illuminate\Console\OutputStyle;
+use DarkGhostHunter\Laraconfig\Migrator\Data;
+use DarkGhostHunter\Laraconfig\Eloquent\Setting;
+use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
+use DarkGhostHunter\Laraconfig\Registrar\Declaration;
 
 /**
  * @internal
@@ -18,7 +18,7 @@ class UpdateExistingMetadata
     /**
      * UpdateExistingMetadata constructor.
      *
-     * @param  \Illuminate\Console\OutputStyle  $output
+     * @param \Illuminate\Console\OutputStyle $output
      */
     public function __construct(protected OutputStyle $output)
     {
@@ -26,11 +26,6 @@ class UpdateExistingMetadata
 
     /**
      * Handles the Settings migration.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
-     * @param  \Closure  $next
-     *
-     * @return mixed
      */
     public function handle(Data $data, Closure $next): mixed
     {
@@ -53,11 +48,7 @@ class UpdateExistingMetadata
     }
 
     /**
-     * Returns a collection of metadata that is already present in the.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
-     *
-     * @return \Illuminate\Support\Collection|\DarkGhostHunter\Laraconfig\Registrar\Declaration[]
+     * Returns a collection of metadata that is already present in the metadata.
      */
     protected function getUpdatableMetadata(Data $data): Collection
     {
@@ -79,11 +70,6 @@ class UpdateExistingMetadata
 
     /**
      * Updates each existing metadata from its declaration of the same name.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
-     * @param  \DarkGhostHunter\Laraconfig\Registrar\Declaration  $declaration
-     *
-     * @return int
      */
     protected function updateMetadata(Data $data, Declaration $declaration): int
     {
@@ -91,11 +77,11 @@ class UpdateExistingMetadata
         $metadata = $data->metadata->get($declaration->name);
 
         $metadata->forceFill([
-            'type'       => $declaration->type,
-            'default'    => $declaration->default,
-            'bag'        => $declaration->bag,
+            'type' => $declaration->type,
+            'default' => $declaration->default,
+            'bag' => $declaration->bag,
             'is_enabled' => $declaration->enabled,
-            'group'      => $declaration->group,
+            'group' => $declaration->group,
         ]);
 
         $metadata->save();
@@ -112,11 +98,6 @@ class UpdateExistingMetadata
 
     /**
      * Update each child setting (of each user) using the declaration procedure.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Registrar\Declaration  $declaration
-     * @param  \DarkGhostHunter\Laraconfig\Eloquent\Metadata  $metadata
-     *
-     * @return int
      */
     protected function updateSettingValues(Declaration $declaration, Metadata $metadata): int
     {
@@ -130,7 +111,7 @@ class UpdateExistingMetadata
 
         foreach ($oldSettings as $setting) {
             $setting->update(['value' => ($declaration->using)($setting)]);
-            $count++;
+            ++$count;
         }
 
         return $count;

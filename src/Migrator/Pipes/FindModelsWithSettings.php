@@ -3,17 +3,17 @@
 namespace DarkGhostHunter\Laraconfig\Migrator\Pipes;
 
 use Closure;
+use Generator;
+use ReflectionClass;
+use RuntimeException;
+use ReflectionException;
+use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Database\Eloquent\Model;
 use DarkGhostHunter\Laraconfig\HasConfig;
 use DarkGhostHunter\Laraconfig\Migrator\Data;
-use Generator;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
-use ReflectionClass;
-use ReflectionException;
-use RuntimeException;
 
 /**
  * @internal
@@ -23,10 +23,8 @@ class FindModelsWithSettings
     /**
      * FindModelsWithSettings constructor.
      *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
-     * @param  \Illuminate\Filesystem\Filesystem  $filesystem
-     *
-     * @return void
+     * @param \Illuminate\Contracts\Foundation\Application $app
+     * @param \Illuminate\Filesystem\Filesystem            $filesystem
      */
     public function __construct(protected Application $app, protected Filesystem $filesystem)
     {
@@ -34,11 +32,6 @@ class FindModelsWithSettings
 
     /**
      * Handles the Settings migration.
-     *
-     * @param  \DarkGhostHunter\Laraconfig\Migrator\Data  $data
-     * @param  \Closure  $next
-     *
-     * @return mixed
      */
     public function handle(Data $data, Closure $next): mixed
     {
@@ -62,8 +55,6 @@ class FindModelsWithSettings
 
     /**
      * Finds all models from the project.
-     *
-     * @return \Generator
      */
     protected function findModelsWithSettings(): Generator
     {
@@ -96,23 +87,23 @@ class FindModelsWithSettings
             }
 
             // Should be part of the Eloquent ORM Model class.
-            if (! $reflection->isSubclassOf(Model::class)) {
+            if (!$reflection->isSubclassOf(Model::class)) {
                 continue;
             }
 
             // We will exclude all models that are not instantiable, like abstracts,
             // as the developer may be using an abstract "User" class, extended by
             // other classes like "Admin", "Moderator", etc, avoiding duplicates.
-            if (! $reflection->isInstantiable()) {
+            if (!$reflection->isInstantiable()) {
                 continue;
             }
 
             // Should have the HasConfig trait, or have a trait that uses it.
-            if (! in_array(HasConfig::class, trait_uses_recursive($className), true)) {
+            if (!in_array(HasConfig::class, trait_uses_recursive($className), true)) {
                 continue;
             }
 
-            yield new $className;
+            yield new $className();
         }
     }
 }

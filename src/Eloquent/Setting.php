@@ -2,27 +2,23 @@
 
 namespace DarkGhostHunter\Laraconfig\Eloquent;
 
-use DarkGhostHunter\Laraconfig\MorphManySettings;
-use DarkGhostHunter\Laraconfig\SettingsCache;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use DarkGhostHunter\Laraconfig\SettingsCache;
+use DarkGhostHunter\Laraconfig\MorphManySettings;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property-read \Illuminate\Database\Eloquent\Model $user
- *
- * @property-read int $id
- *
- * @property null|array|bool|string|int|float|\Illuminate\Support\Collection|\Illuminate\Support\Carbon $value
- * @property boolean $is_enabled
- *
- * @property-read string $name // Added by the "add-metadata" global scope.
- * @property-read string $type // Added by the "add-metadata" global scope.
- * @property-read \Illuminate\Support\Carbon|\Illuminate\Support\Collection|array|string|int|float|bool|null $default // Added by the "add-metadata" global scope.
- * @property-read string $group // Added by the "add-metadata" global scope.
- * @property-read string $bag // Added by the "add-metadata" global scope.
- *
- * @property-read \DarkGhostHunter\Laraconfig\Eloquent\Metadata $metadata
+ * @property \Illuminate\Database\Eloquent\Model                                                        $user
+ * @property int                                                                                        $id
+ * @property array|bool|string|int|float|\Illuminate\Support\Collection|\Illuminate\Support\Carbon|null $value
+ * @property bool                                                                                       $is_enabled
+ * @property string                                                                                     $name       // Added by the "add-metadata" global scope.
+ * @property string                                                                                     $type       // Added by the "add-metadata" global scope.
+ * @property \Illuminate\Support\Carbon|\Illuminate\Support\Collection|array|string|int|float|bool|null $default    // Added by the "add-metadata" global scope.
+ * @property string                                                                                     $group      // Added by the "add-metadata" global scope.
+ * @property string                                                                                     $bag        // Added by the "add-metadata" global scope.
+ * @property \DarkGhostHunter\Laraconfig\Eloquent\Metadata                                              $metadata
  */
 class Setting extends Model
 {
@@ -39,8 +35,8 @@ class Setting extends Model
      * @var array
      */
     protected $casts = [
-        'value'      => Casts\DynamicCasting::class,
-        'default'    => Casts\DynamicCasting::class,
+        'value' => Casts\DynamicCasting::class,
+        'default' => Casts\DynamicCasting::class,
         'is_enabled' => 'boolean',
     ];
 
@@ -60,22 +56,16 @@ class Setting extends Model
 
     /**
      * Parent bags used for scoping.
-     *
-     * @var array|null
      */
     public ?array $parentBags = null;
 
     /**
      * Settings cache repository.
-     *
-     * @var \DarkGhostHunter\Laraconfig\SettingsCache|null
      */
     public ?SettingsCache $cache = null;
 
     /**
      * Bootstrap the model and its traits.
-     *
-     * @return void
      */
     protected static function boot(): void
     {
@@ -91,8 +81,6 @@ class Setting extends Model
 
     /**
      * Perform any actions required after the model boots.
-     *
-     * @return void
      */
     protected static function booted(): void
     {
@@ -101,8 +89,6 @@ class Setting extends Model
 
     /**
      * The parent metadata.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function metadata(): BelongsTo
     {
@@ -111,8 +97,6 @@ class Setting extends Model
 
     /**
      * The user this settings belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
     public function user(): MorphTo
     {
@@ -122,7 +106,7 @@ class Setting extends Model
     /**
      * Fills the settings data from a Metadata model instance.
      *
-     * @param  \DarkGhostHunter\Laraconfig\Eloquent\Metadata  $metadata
+     * @param \DarkGhostHunter\Laraconfig\Eloquent\Metadata $metadata
      *
      * @return $this
      */
@@ -136,10 +120,9 @@ class Setting extends Model
     /**
      * Sets a value into the setting and saves it immediately.
      *
-     * @param  mixed  $value
-     * @param  bool  $force  When "false", it will be only set if its enabled.
+     * @param bool $force when "false", it will be only set if its enabled
      *
-     * @return bool "true" on success, or "false" if it's disabled.
+     * @return bool "true" on success, or "false" if it's disabled
      */
     public function set(mixed $value, bool $force = true): bool
     {
@@ -153,9 +136,7 @@ class Setting extends Model
     /**
      * Sets a value into the setting if it's enabled.
      *
-     * @param  mixed  $value
-     *
-     * @return bool "true" on success, or "false" if it's disabled.
+     * @return bool "true" on success, or "false" if it's disabled
      */
     public function setIfEnabled(mixed $value): bool
     {
@@ -163,9 +144,7 @@ class Setting extends Model
     }
 
     /**
-     * Reverts back the setting to its default value.
-     *
-     * @return void
+     * Reverts the setting to its default value.
      */
     public function setDefault(): void
     {
@@ -183,10 +162,6 @@ class Setting extends Model
 
     /**
      * Enables the setting.
-     *
-     * @param  bool  $enable
-     *
-     * @return void
      */
     public function enable(bool $enable = true): void
     {
@@ -195,8 +170,6 @@ class Setting extends Model
 
     /**
      * Disables the setting.
-     *
-     * @return void
      */
     public function disable(): void
     {
@@ -205,18 +178,14 @@ class Setting extends Model
 
     /**
      * Check if the current setting is enabled.
-     *
-     * @return bool
      */
     public function isEnabled(): bool
     {
-        return $this->is_enabled === true;
+        return true === $this->is_enabled;
     }
 
     /**
      * Check if the current settings is disabled.
-     *
-     * @return bool
      */
     public function isDisabled(): bool
     {
@@ -225,8 +194,6 @@ class Setting extends Model
 
     /**
      * Forcefully invalidates the cache from this setting.
-     *
-     * @return void
      */
     public function invalidateCache(): void
     {

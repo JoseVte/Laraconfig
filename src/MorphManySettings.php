@@ -2,13 +2,13 @@
 
 namespace DarkGhostHunter\Laraconfig;
 
-use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
-use Illuminate\Contracts\Cache\Factory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Arr;
+use Illuminate\Contracts\Cache\Factory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Builder
@@ -20,8 +20,6 @@ class MorphManySettings extends MorphMany
 {
     /**
      * Bags of the model.
-     *
-     * @var array
      */
     protected array $bags;
 
@@ -34,12 +32,6 @@ class MorphManySettings extends MorphMany
 
     /**
      * MorphManySettings constructor.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  \Illuminate\Database\Eloquent\Model  $parent
-     * @param  string  $type
-     * @param  string  $id
-     * @param  string  $localKey
      */
     public function __construct(Builder $query, Model $parent, string $type, string $id, string $localKey)
     {
@@ -50,10 +42,6 @@ class MorphManySettings extends MorphMany
 
     /**
      * Prepares the relation instance to be handled.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $parent
-     *
-     * @return void
      */
     public function windUp(Model $parent): void
     {
@@ -75,10 +63,7 @@ class MorphManySettings extends MorphMany
     /**
      * Get the relationship query.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  \Illuminate\Database\Eloquent\Builder  $parentQuery
-     * @param  array|mixed  $columns
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param array|mixed $columns
      */
     public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*']): Builder
     {
@@ -92,12 +77,6 @@ class MorphManySettings extends MorphMany
 
     /**
      * Generates the key for the model to save into the cache.
-     *
-     * @param  string  $prefix
-     * @param  string  $morphClass
-     * @param  string|int  $key
-     *
-     * @return string
      */
     public static function generateKeyForModel(string $prefix, string $morphClass, string|int $key): string
     {
@@ -106,10 +85,6 @@ class MorphManySettings extends MorphMany
 
     /**
      * Initializes the Settings Repository for a given user.
-     *
-     * @param  bool  $force
-     *
-     * @return void
      */
     public function initialize(bool $force = false): void
     {
@@ -129,7 +104,7 @@ class MorphManySettings extends MorphMany
         foreach (Metadata::query()->lazyById(column: 'id') as $metadatum) {
             $setting = $query->make()->forceFill([
                 'metadata_id' => $metadatum->getKey(),
-                'value' => $metadatum->default
+                'value' => $metadatum->default,
             ]);
 
             $setting->saveQuietly();
@@ -146,8 +121,6 @@ class MorphManySettings extends MorphMany
 
     /**
      * Checks if the user settings has been initialized.
-     *
-     * @return bool
      */
     public function isInitialized(): bool
     {
@@ -156,10 +129,6 @@ class MorphManySettings extends MorphMany
 
     /**
      * Adds a cache instance to the setting models, if there is one.
-     *
-     * @param  \Illuminate\Database\Eloquent\Collection  $settings
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
      */
     protected function prepareCollection(EloquentCollection $settings): EloquentCollection
     {
@@ -195,8 +164,6 @@ class MorphManySettings extends MorphMany
 
     /**
      * Returns all the bags being used by the model.
-     *
-     * @return array
      */
     public function bags(): array
     {
