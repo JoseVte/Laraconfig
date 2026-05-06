@@ -11,18 +11,18 @@
     }
   ],
   "require": {
-    "php": "^8.2",
-    "illuminate/database": "^12.0",
-    "illuminate/support": "^12.0",
-    "illuminate/collections": "^12.0",
-    "illuminate/config": "^12.0",
-    "illuminate/cache": "^12.0",
-    "symfony/console": "^7.0"
+    "php": "^8.3",
+    "illuminate/database": "^13.0",
+    "illuminate/support": "^13.0",
+    "illuminate/collections": "^13.0",
+    "illuminate/config": "^13.0",
+    "illuminate/cache": "^13.0",
+    "symfony/console": "^7.4|^8.0"
   },
   "require-dev": {
     "mockery/mockery": "^1.6",
-    "orchestra/testbench": "^10.0",
-    "phpunit/phpunit": "^11.0"
+    "orchestra/testbench": "^11.0",
+    "phpunit/phpunit": "^11.0|^12.0"
   },
   "autoload-dev": {
     "psr-4": {

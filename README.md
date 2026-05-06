@@ -22,8 +22,8 @@ User::find(1)->settings->set('color', 'red');
 
 ## Requirements
 
-- Laravel 12.x
-- PHP 8.2 or later
+- Laravel 13.x
+- PHP 8.3 or later
 
 ## How it works
 
