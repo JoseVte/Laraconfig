@@ -22,6 +22,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\HigherOrderCollectionProxy;
 use DarkGhostHunter\Laraconfig\Eloquent\Scopes\FilterBags;
 
+use function Orchestra\Testbench\default_migration_path;
+
 class HasConfigTest extends BaseTestCase
 {
     use RefreshDatabase;
@@ -61,7 +63,7 @@ class HasConfigTest extends BaseTestCase
      */
     protected function defineDatabaseMigrations(): void
     {
-        $this->loadLaravelMigrations();
+        $this->loadMigrationsFrom(default_migration_path());
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
 

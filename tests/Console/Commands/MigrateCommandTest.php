@@ -20,6 +20,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use DarkGhostHunter\Laraconfig\Registrar\SettingRegistrar;
 use DarkGhostHunter\Laraconfig\Eloquent\Setting as SettingModel;
 
+use function Orchestra\Testbench\default_migration_path;
+
 class MigrateCommandTest extends BaseTestCase
 {
     use RefreshDatabase;
@@ -90,7 +92,7 @@ class MigrateCommandTest extends BaseTestCase
      */
     protected function defineDatabaseMigrations(): void
     {
-        $this->loadLaravelMigrations();
+        $this->loadMigrationsFrom(default_migration_path());
         $this->loadMigrationsFrom(__DIR__.'/../../../database/migrations');
     }
 
